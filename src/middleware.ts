@@ -1,9 +1,16 @@
-import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { getToken } from "next-auth/jwt"
 
-export default auth((req) => {
-  const { pathname } = req.nextUrl
-  const isLoggedIn = !!req.auth
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  
+  // Get the token from the session
+  const token = await getToken({ 
+    req: request, 
+    secret: process.env.AUTH_SECRET 
+  })
+  const isLoggedIn = !!token
 
   // Public routes that don't require authentication
   const publicRoutes = ["/login", "/register", "/api/auth", "/api/validate"]
@@ -26,13 +33,13 @@ export default auth((req) => {
       if (!isLoggedIn) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
-      if (req.auth?.user?.role !== "ADMIN") {
+      if (token?.role !== "ADMIN") {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
       }
     }
 
     // Other API routes require authentication
-    if (!isLoggedIn) {
+    if (!isLoggedIn && !isPublicRoute) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -41,23 +48,23 @@ export default auth((req) => {
 
   // Redirect unauthenticated users to login
   if (!isLoggedIn && !isPublicRoute) {
-    const loginUrl = new URL("/login", req.nextUrl.origin)
+    const loginUrl = new URL("/login", request.nextUrl.origin)
     loginUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(loginUrl)
   }
 
   // Redirect authenticated users away from auth pages
   if (isLoggedIn && (pathname === "/login" || pathname === "/register")) {
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin))
+    return NextResponse.redirect(new URL("/dashboard", request.nextUrl.origin))
   }
 
   // Admin routes require admin role
-  if (pathname.startsWith("/admin") && req.auth?.user?.role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin))
+  if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/dashboard", request.nextUrl.origin))
   }
 
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: [

@@ -5,8 +5,8 @@
 #property copyright "EA License System"
 #property version   "1.00"
 
-// API Configuration - Update this URL after deployment
-#define LICENSE_API_ENDPOINT "https://your-domain.vercel.app"
+// API Configuration - Production URL
+#define LICENSE_API_ENDPOINT "https://ea-license-system.vercel.app"
 
 // Validation Settings
 #define VALIDATION_INTERVAL_HOURS 12

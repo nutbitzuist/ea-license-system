@@ -6,7 +6,7 @@
 #property version   "1.00"
 
 // API Configuration - Production URL
-#define LICENSE_API_ENDPOINT "https://ea-license-system-one.vercel.app"
+#define LICENSE_API_ENDPOINT "https://ea-license-api-production.up.railway.app"
 
 // Validation Settings
 #define VALIDATION_INTERVAL_HOURS 12

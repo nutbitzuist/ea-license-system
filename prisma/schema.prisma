@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SubscriptionTier {
+  TIER_1  // 1 account
+  TIER_2  // 5 accounts
+  TIER_3  // 10 accounts
+}
+
+enum AccountType {
+  DEMO
+  LIVE
+}
+
+enum TerminalType {
+  MT4
+  MT5
+}
+
+enum ValidationResult {
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id                String           @id @default(cuid())
+  email             String           @unique
+  passwordHash      String
+  name              String
+  role              UserRole         @default(USER)
+  apiKey            String           @unique @default(cuid())
+  apiSecret         String           @default(cuid())
+  subscriptionTier  SubscriptionTier @default(TIER_1)
+  isActive          Boolean          @default(true)
+  isApproved        Boolean          @default(false)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  mtAccounts        MtAccount[]
+  eaAccess          UserEaAccess[]
+  validationLogs    ValidationLog[]
+
+  @@map("users")
+}
+
+model MtAccount {
+  id              String       @id @default(cuid())
+  userId          String
+  accountNumber   String
+  brokerName      String
+  accountType     AccountType
+  terminalType    TerminalType
+  nickname        String?
+  isActive        Boolean      @default(true)
+  lastValidatedAt DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validationLogs  ValidationLog[]
+
+  @@unique([userId, accountNumber, brokerName])
+  @@map("mt_accounts")
+}
+
+model ExpertAdvisor {
+  id              String    @id @default(cuid())
+  eaCode          String    @unique
+  name            String
+  description     String?
+  currentVersion  String
+  mt4FileName     String?
+  mt5FileName     String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  userAccess      UserEaAccess[]
+  validationLogs  ValidationLog[]
+
+  @@map("expert_advisors")
+}
+
+model UserEaAccess {
+  id        String    @id @default(cuid())
+  userId    String
+  eaId      String
+  isEnabled Boolean   @default(true)
+  grantedAt DateTime  @default(now())
+  expiresAt DateTime?
+
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ea   ExpertAdvisor @relation(fields: [eaId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eaId])
+  @@map("user_ea_access")
+}
+
+model ValidationLog {
+  id            String           @id @default(cuid())
+  userId        String
+  mtAccountId   String?
+  eaId          String?
+  accountNumber String
+  brokerName    String
+  terminalType  TerminalType
+  eaCode        String
+  eaVersion     String
+  ipAddress     String?
+  result        ValidationResult
+  failureReason String?
+  createdAt     DateTime         @default(now())
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mtAccount MtAccount?     @relation(fields: [mtAccountId], references: [id], onDelete: SetNull)
+  ea        ExpertAdvisor? @relation(fields: [eaId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([accountNumber, brokerName])
+  @@map("validation_logs")
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}

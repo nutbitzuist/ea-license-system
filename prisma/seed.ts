@@ -146,6 +146,67 @@ async function main() {
       description: "Hedging strategy that opens both buy and sell simultaneously. Closes losing side when ADX confirms trend (> 30). Trails winning side with ATR stop. Requires hedging-enabled broker.",
       currentVersion: "1.0.0",
     },
+    // Martingale EAs (21-30) - HIGH RISK
+    {
+      eaCode: "classic_martingale_ea",
+      name: "Classic Martingale EA",
+      description: "Classic martingale that doubles lot after each loss. Resets on win. Includes daily loss limit and max trades. WARNING: VERY HIGH RISK - requires large account balance.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "anti_martingale_ea",
+      name: "Anti-Martingale EA",
+      description: "Reverse martingale - increases lot after wins, resets after losses. Capitalizes on winning streaks while limiting losses. Safer than classic martingale.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "smooth_martingale_ea",
+      name: "Smooth Martingale EA",
+      description: "Gentler martingale using 1.3x multiplier instead of 2x. More gradual progression allows more trades before max lot. Includes equity stop protection.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "grid_martingale_ea",
+      name: "Grid Martingale EA",
+      description: "Combines grid trading with martingale. Opens positions at fixed intervals with increasing lots. Closes all when profit target reached. VERY HIGH RISK.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "fibonacci_martingale_ea",
+      name: "Fibonacci Martingale EA",
+      description: "Uses Fibonacci sequence (1,1,2,3,5,8...) for lot sizing. More gradual than 2x doubling. Goes back 2 levels on win for faster recovery.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "dalembert_martingale_ea",
+      name: "D'Alembert Martingale EA",
+      description: "Linear progression: +1 unit on loss, -1 unit on win. More conservative than exponential martingale. Lower capital requirements.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "labouchere_martingale_ea",
+      name: "Labouchere Martingale EA",
+      description: "Cancellation system using number sequence. Win: remove ends. Loss: add bet to end. Goal is to empty the sequence for guaranteed profit.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "parlay_martingale_ea",
+      name: "Parlay Martingale EA",
+      description: "Let It Ride strategy - reinvests profits into next trade. Great for winning streaks. Limited risk as only base lot is at risk on losses.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "oscar_grind_martingale_ea",
+      name: "Oscar's Grind Martingale EA",
+      description: "Conservative system aiming for 1 unit profit per cycle. Same bet on loss, +1 on win. Resets when target reached. Lower variance.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "hybrid_martingale_ea",
+      name: "Hybrid Martingale EA",
+      description: "Smart martingale that switches strategies based on market. Trending: anti-martingale. Ranging: classic martingale. Includes cooling period and safety stops.",
+      currentVersion: "1.0.0",
+    },
   ]
 
   for (const ea of sampleEAs) {

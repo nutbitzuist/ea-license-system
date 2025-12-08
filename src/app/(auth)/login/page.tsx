@@ -15,31 +15,45 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(null)
 
     try {
+      console.log("Attempting login for:", email)
+      
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       })
 
+      console.log("SignIn result:", result)
+
       if (result?.error) {
+        console.error("Login error:", result.error)
+        setError("Invalid email or password")
         toast({
           title: "Error",
           description: "Invalid email or password",
           variant: "destructive",
         })
-      } else {
+      } else if (result?.ok) {
+        console.log("Login successful, redirecting...")
         router.push("/dashboard")
         router.refresh()
+      } else {
+        console.error("Unexpected result:", result)
+        setError("Login failed. Please try again.")
       }
-    } catch {
+    } catch (err) {
+      console.error("Login exception:", err)
+      setError("Something went wrong. Please try again.")
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",
@@ -88,6 +102,11 @@ export default function LoginPage() {
               className="bg-slate-700/50 border-slate-600 text-white"
             />
           </div>
+          {error && (
+            <div className="p-3 rounded-md bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={isLoading}>

@@ -85,6 +85,67 @@ async function main() {
       description: "Breakout strategy with volatility filter. Uses ADX to confirm trends, includes time filter to avoid news. Trades range breakouts with DI confirmation. Best on M30-H1.",
       currentVersion: "1.0.0",
     },
+    // Advanced EAs (11-20)
+    {
+      eaCode: "multi_timeframe_ea",
+      name: "Multi-Timeframe EA",
+      description: "Multi-timeframe trend alignment strategy. Uses H4 for major trend (50 EMA), H1 for intermediate (20 EMA), and M15 RSI for entry timing. Only trades when all timeframes agree. Best for major pairs.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "fibonacci_retracement_ea",
+      name: "Fibonacci Retracement EA",
+      description: "Fibonacci retracement trading. Identifies swing highs/lows, calculates 38.2%, 50%, 61.8% levels, and trades bounces with candlestick confirmation. Best on H1-H4 timeframes.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "price_action_ea",
+      name: "Price Action EA",
+      description: "Pure price action pattern recognition. Detects Pin Bars (Hammer/Shooting Star) and Engulfing patterns at key support/resistance levels. No indicators needed. Best on H4-Daily.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "momentum_breakout_ea",
+      name: "Momentum Breakout EA",
+      description: "Momentum-confirmed breakouts using CCI and volume analysis. Only trades breakouts with CCI > 100 (or < -100) and volume spike > 1.5x average. Uses ATR trailing stop. Best on H1.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "london_breakout_ea",
+      name: "London Breakout EA",
+      description: "London session breakout strategy. Calculates Asian session range (00:00-07:00), trades breakouts during London open. Closes all trades at end of London session. Best for GBP pairs.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "mean_reversion_ea",
+      name: "Mean Reversion EA",
+      description: "Statistical mean reversion using Z-Score. Trades when price deviates > 2 standard deviations from the mean. Exits when Z-Score returns to 0. Best for range-bound pairs like EURCHF.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "keltner_channel_ea",
+      name: "Keltner Channel EA",
+      description: "Keltner Channel (EMA + ATR bands) pullback strategy. Determines trend by price position, enters on pullback to middle line. TP at opposite band. Best on H1-H4 trending pairs.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "williams_r_ea",
+      name: "Williams %R EA",
+      description: "Williams %R with trend filter. Uses 100 EMA for trend direction, trades %R extremes (-80 oversold, -20 overbought) in trend direction. Exits at opposite extreme. Best on H1-H4.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "parabolic_sar_ea",
+      name: "Parabolic SAR EA",
+      description: "Parabolic SAR trend following with ADX filter. Enters on SAR flip when ADX > 25. Uses SAR as dynamic trailing stop. Rides trends until SAR flips. Best on H1-H4.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "hedge_ea",
+      name: "Hedge EA",
+      description: "Hedging strategy that opens both buy and sell simultaneously. Closes losing side when ADX confirms trend (> 30). Trails winning side with ATR stop. Requires hedging-enabled broker.",
+      currentVersion: "1.0.0",
+    },
   ]
 
   for (const ea of sampleEAs) {

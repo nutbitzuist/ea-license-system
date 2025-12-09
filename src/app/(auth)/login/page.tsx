@@ -1,67 +1,64 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Shield, Loader2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
-  const { toast } = useToast()
+  const [isPending, startTransition] = useTransition()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Please enter both email and password")
+      return
+    }
+    
+    setIsSubmitting(true)
     setError(null)
 
     try {
-      console.log("Attempting login for:", email)
-      
       const result = await signIn("credentials", {
-        email,
+        email: email.trim().toLowerCase(),
         password,
         redirect: false,
       })
 
-      console.log("SignIn result:", result)
+      if (!result) {
+        setError("No response from server. Please try again.")
+        setIsSubmitting(false)
+        return
+      }
 
-      if (result?.error) {
-        console.error("Login error:", result.error)
-        setError("Invalid email or password")
-        toast({
-          title: "Error",
-          description: "Invalid email or password",
-          variant: "destructive",
-        })
-      } else if (result?.ok) {
-        console.log("Login successful, redirecting...")
-        router.push("/dashboard")
-        router.refresh()
-      } else {
-        console.error("Unexpected result:", result)
-        setError("Login failed. Please try again.")
+      if (result.error) {
+        setError(result.error === "CredentialsSignin" ? "Invalid email or password" : result.error)
+        setIsSubmitting(false)
+        return
+      }
+      
+      if (result.ok) {
+        window.location.href = "/dashboard"
       }
     } catch (err) {
-      console.error("Login exception:", err)
-      setError("Something went wrong. Please try again.")
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
+      console.error("Login error:", err)
+      setError("Connection error. Please try again.")
+      setIsSubmitting(false)
     }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    startTransition(() => {
+      handleLogin()
+    })
   }
 
   return (
@@ -109,9 +106,13 @@ export default function LoginPage() {
           )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Sign In
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isPending || isSubmitting}
+          >
+            {(isPending || isSubmitting) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isPending || isSubmitting ? "Signing in..." : "Sign In"}
           </Button>
           <p className="text-sm text-slate-400 text-center">
             Don&apos;t have an account?{" "}

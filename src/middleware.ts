@@ -5,10 +5,10 @@ import { getToken } from "next-auth/jwt"
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
-  // Get the token from the session
+  // Get the token from the session (must use the same secret as NextAuth)
   const token = await getToken({ 
     req: request, 
-    secret: process.env.AUTH_SECRET 
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET, 
   })
   const isLoggedIn = !!token
 

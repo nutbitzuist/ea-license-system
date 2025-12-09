@@ -12,6 +12,9 @@ import {
   FileText,
   Shield,
   BarChart3,
+  Download,
+  BookOpen,
+  Activity,
 } from "lucide-react"
 
 const userNavItems = [
@@ -21,9 +24,9 @@ const userNavItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "MT Accounts",
-    href: "/accounts",
-    icon: Users,
+    title: "Downloads",
+    href: "/downloads",
+    icon: Download,
   },
   {
     title: "Expert Advisors",
@@ -31,9 +34,24 @@ const userNavItems = [
     icon: Bot,
   },
   {
+    title: "Analytics",
+    href: "/analytics",
+    icon: Activity,
+  },
+  {
+    title: "MT Accounts",
+    href: "/accounts",
+    icon: Users,
+  },
+  {
     title: "API Keys",
     href: "/api-keys",
     icon: Key,
+  },
+  {
+    title: "Quick Start",
+    href: "/guide",
+    icon: BookOpen,
   },
   {
     title: "Settings",

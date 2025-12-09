@@ -105,31 +105,24 @@ export default function EAsPage() {
                 )}
 
                 <div className="flex gap-2">
-                  {ea.mt4FileName && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => handleDownload(ea.eaCode, "MT4")}
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      MT4
-                    </Button>
-                  )}
-                  {ea.mt5FileName && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => handleDownload(ea.eaCode, "MT5")}
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      MT5
-                    </Button>
-                  )}
-                  {!ea.mt4FileName && !ea.mt5FileName && (
-                    <p className="text-sm text-muted-foreground">No files available</p>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleDownload(ea.eaCode, "MT4")}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    MT4
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleDownload(ea.eaCode, "MT5")}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    MT5
+                  </Button>
                 </div>
               </CardContent>
             </Card>

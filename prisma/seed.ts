@@ -207,6 +207,67 @@ async function main() {
       description: "Smart martingale that switches strategies based on market. Trending: anti-martingale. Ranging: classic martingale. Includes cooling period and safety stops.",
       currentVersion: "1.0.0",
     },
+    // Utility EAs (31-40)
+    {
+      eaCode: "trade_manager_ea",
+      name: "Trade Manager EA",
+      description: "Comprehensive trade management utility. Features: ATR-based trailing stops, break-even automation, partial close at targets, time-based exits. Works with any trades.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "risk_calculator_ea",
+      name: "Risk Calculator EA",
+      description: "Real-time position size calculator based on risk percentage. Displays optimal lot size, pip value, margin requirements. One-click trading buttons included.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "news_filter_utility_ea",
+      name: "News Filter Utility EA",
+      description: "Trading hours and news filter manager. Controls trading based on sessions, Friday close, Monday delay. Can pause or close trades during restricted times.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "equity_protector_ea",
+      name: "Equity Protector EA",
+      description: "Account protection utility. Monitors drawdown, daily loss limits, and profit targets. Closes all trades when limits reached. Essential for risk management.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "spread_monitor_ea",
+      name: "Spread Monitor EA",
+      description: "Real-time spread monitoring with alerts. Tracks min/max/average spread, alerts when spread exceeds limits. Helps avoid trading during high spread periods.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "trade_copier_ea",
+      name: "Trade Copier EA",
+      description: "Local trade copier between MT terminals. Master/Slave mode, lot multiplier, reverse copy option. Copy trades between accounts on the same computer.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "session_trader_ea",
+      name: "Session Trader EA",
+      description: "Trading session indicator showing Sydney, Tokyo, London, NY sessions. Highlights overlaps (best trading times), countdown to next session.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "order_block_finder_ea",
+      name: "Order Block Finder EA",
+      description: "Automatically identifies and draws order blocks (supply/demand zones). Alerts when price approaches zones. Essential for institutional trading concepts.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "auto_lot_calculator_ea",
+      name: "Auto Lot Calculator EA",
+      description: "Advanced position sizing with multiple methods: Fixed Risk %, Fixed Fractional, Kelly Criterion. Automatically calculates optimal lot for any trade.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "trade_journal_ea",
+      name: "Trade Journal EA",
+      description: "Automatic trade logging and statistics. Exports to CSV, calculates win rate, profit factor, expectancy, max drawdown. Essential for performance analysis.",
+      currentVersion: "1.0.0",
+    },
   ]
 
   for (const ea of sampleEAs) {

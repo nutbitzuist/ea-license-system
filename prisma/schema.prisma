@@ -1,0 +1,252 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SubscriptionTier {
+  TIER_1  // 1 account
+  TIER_2  // 5 accounts
+  TIER_3  // 10 accounts
+}
+
+enum AccountType {
+  DEMO
+  LIVE
+}
+
+enum TerminalType {
+  MT4
+  MT5
+}
+
+enum ValidationResult {
+  SUCCESS
+  FAILED
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+enum TradeStatus {
+  OPEN
+  CLOSED
+}
+
+enum ReferralStatus {
+  PENDING
+  APPROVED
+  REWARDED
+}
+
+model User {
+  id                String           @id @default(cuid())
+  email             String           @unique
+  passwordHash      String
+  name              String
+  role              UserRole         @default(USER)
+  apiKey            String           @unique @default(cuid())
+  apiSecret         String           @default(cuid())
+  subscriptionTier  SubscriptionTier @default(TIER_1)
+  isActive          Boolean          @default(true)
+  isApproved        Boolean          @default(false)
+  trialEndsAt       DateTime?        // 14-day free trial end date
+  referralCode      String           @unique @default(cuid())
+  referredByCode    String?          // Referral code used at signup
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  mtAccounts           MtAccount[]
+  eaAccess             UserEaAccess[]
+  validationLogs       ValidationLog[]
+  trades               Trade[]
+  notificationSettings NotificationSettings?
+  referralsMade        Referral[] @relation("ReferrerRelation")
+  referredByRef        Referral?  @relation("ReferredRelation")
+
+  @@map("users")
+}
+
+model MtAccount {
+  id              String       @id @default(cuid())
+  userId          String
+  accountNumber   String
+  brokerName      String
+  accountType     AccountType
+  terminalType    TerminalType
+  nickname        String?
+  isActive        Boolean      @default(true)
+  lastValidatedAt DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validationLogs  ValidationLog[]
+  trades          Trade[]
+
+  @@unique([userId, accountNumber, brokerName])
+  @@map("mt_accounts")
+}
+
+model ExpertAdvisor {
+  id              String    @id @default(cuid())
+  eaCode          String    @unique
+  name            String
+  description     String?
+  currentVersion  String
+  mt4FileName     String?
+  mt5FileName     String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  userAccess      UserEaAccess[]
+  validationLogs  ValidationLog[]
+  trades          Trade[]
+
+  @@map("expert_advisors")
+}
+
+model UserEaAccess {
+  id        String    @id @default(cuid())
+  userId    String
+  eaId      String
+  isEnabled Boolean   @default(true)
+  grantedAt DateTime  @default(now())
+  expiresAt DateTime?
+
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ea   ExpertAdvisor @relation(fields: [eaId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eaId])
+  @@map("user_ea_access")
+}
+
+model ValidationLog {
+  id            String           @id @default(cuid())
+  userId        String
+  mtAccountId   String?
+  eaId          String?
+  accountNumber String
+  brokerName    String
+  terminalType  TerminalType
+  eaCode        String
+  eaVersion     String
+  ipAddress     String?
+  result        ValidationResult
+  failureReason String?
+  createdAt     DateTime         @default(now())
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mtAccount MtAccount?     @relation(fields: [mtAccountId], references: [id], onDelete: SetNull)
+  ea        ExpertAdvisor? @relation(fields: [eaId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([accountNumber, brokerName])
+  @@map("validation_logs")
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// ============================================
+// TRADE PERFORMANCE TRACKING
+// ============================================
+
+model Trade {
+  id            String      @id @default(cuid())
+  userId        String
+  mtAccountId   String
+  eaId          String?
+  ticket        Int
+  symbol        String
+  type          TradeType
+  lots          Float
+  openPrice     Float
+  closePrice    Float?
+  stopLoss      Float?
+  takeProfit    Float?
+  openTime      DateTime
+  closeTime     DateTime?
+  profit        Float?
+  pips          Float?
+  swap          Float?      @default(0)
+  commission    Float?      @default(0)
+  status        TradeStatus @default(OPEN)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mtAccount MtAccount      @relation(fields: [mtAccountId], references: [id], onDelete: Cascade)
+  ea        ExpertAdvisor? @relation(fields: [eaId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, mtAccountId, ticket])
+  @@index([userId, status])
+  @@index([userId, closeTime])
+  @@map("trades")
+}
+
+// ============================================
+// NOTIFICATION SETTINGS
+// ============================================
+
+model NotificationSettings {
+  id                  String  @id @default(cuid())
+  userId              String  @unique
+  telegramChatId      String?
+  telegramUsername    String?
+  telegramVerified    Boolean @default(false)
+  discordWebhook      String?
+  notifyTradeOpen     Boolean @default(true)
+  notifyTradeClose    Boolean @default(true)
+  notifyDailyPL       Boolean @default(true)
+  notifyDrawdown      Boolean @default(true)
+  drawdownThreshold   Float   @default(10.0)  // Percentage
+  dailySummaryTime    String  @default("18:00")  // HH:mm format
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
+}
+
+// ============================================
+// REFERRAL PROGRAM
+// ============================================
+
+model Referral {
+  id           String         @id @default(cuid())
+  referrerId   String
+  referredId   String         @unique
+  referralCode String
+  status       ReferralStatus @default(PENDING)
+  rewardGiven  Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  referrer User @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred User @relation("ReferredRelation", fields: [referredId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId])
+  @@map("referrals")
+}

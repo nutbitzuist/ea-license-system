@@ -158,7 +158,7 @@ void OpenOrder(int orderType, double upper, double lower, double atr)
    double tradeVolume = LotSize;
    if(UseMoneyManagement)
    {
-      double riskSL = StopLoss; // Risk distance in points
+      double riskSL = (atr * ATR_Multiplier * 1.5) / Point; // Use ATR-based SL in points
       if(riskSL <= 0) riskSL = 100; // Default safety
       tradeVolume = GetLotSize(riskSL);
    }

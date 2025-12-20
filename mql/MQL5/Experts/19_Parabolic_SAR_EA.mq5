@@ -305,7 +305,8 @@ void OpenPosition(ENUM_ORDER_TYPE orderType)
    double tradeVolume = LotSize;
    if(UseMoneyManagement)
    {
-      double riskSL = StopLoss; // Risk distance in points
+      double point = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
+      double riskSL = MathAbs(price - g_sar[0]) / point; // Use SAR distance as SL
       if(riskSL <= 0) riskSL = 100; // Default safety
       tradeVolume = GetLotSize(riskSL);
    }

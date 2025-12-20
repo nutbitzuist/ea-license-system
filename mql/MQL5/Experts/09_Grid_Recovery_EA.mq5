@@ -79,8 +79,7 @@ bool ValidateLicense()
       accountNum, broker, LICENSE_EA_CODE, LICENSE_EA_VERSION
    );
    
-   string headers = StringFormat("Content-Type: application/json
-X-API-Key: %s", LicenseKey);
+   string headers = StringFormat("Content-Type: application/json\r\nX-API-Key: %s", LicenseKey);
    
    char postData[];
    char resultData[];
@@ -328,7 +327,7 @@ double GetLotSize(double slPoints)
    double point = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
    double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
    
-   if(tickSize == 0 || point == 0) return LotSize;
+   if(tickSize == 0 || point == 0) return InitialLot;
    
    // Calculate risk amount in money
    double riskMoney = accountBalance * (RiskPercent / 100.0);
@@ -336,7 +335,7 @@ double GetLotSize(double slPoints)
    // Money per lot for 1 point movement = (TickValue / TickSize) * Point
    double moneyPerPointPerLot = (tickValue / tickSize) * point;
    
-   if(moneyPerPointPerLot == 0) return LotSize;
+   if(moneyPerPointPerLot == 0) return InitialLot;
    
    // Calculate lots: RiskMoney / (SL_Points * MoneyPerPointPerLot)
    double calculatedLots = riskMoney / (slPoints * moneyPerPointPerLot);

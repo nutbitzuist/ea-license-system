@@ -261,7 +261,8 @@ void OpenPosition(ENUM_ORDER_TYPE orderType, double upper, double lower)
    double tradeVolume = LotSize;
    if(UseMoneyManagement)
    {
-      double riskSL = StopLoss; // Risk distance in points
+      double point = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
+      double riskSL = (atrValue * ATR_Multiplier * 1.5) / point; // Use ATR-based SL
       if(riskSL <= 0) riskSL = 100; // Default safety
       tradeVolume = GetLotSize(riskSL);
    }

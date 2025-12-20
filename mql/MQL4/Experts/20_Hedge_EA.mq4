@@ -148,7 +148,8 @@ void OpenHedge()
    double tradeVolume = LotSize;
    if(UseMoneyManagement)
    {
-      double riskSL = StopLoss; // Risk distance in points
+      double atr = iATR(Symbol(), Period(), ATR_Period, 0);
+      double riskSL = (atr * ATR_Multiplier) / Point; // Use ATR-based SL in points
       if(riskSL <= 0) riskSL = 100; // Default safety
       tradeVolume = GetLotSize(riskSL);
    }

@@ -101,7 +101,7 @@ export async function GET(
       return NextResponse.json({ error: "EA file mapping not found" }, { status: 404 })
     }
 
-    const extension = terminal === "MT4" ? "mq4" : "mq5"
+    const extension = terminal === "MT4" ? "ex4" : "ex5"
     const fileName = `${fileBaseName}.${extension}`
     const filePath = join(process.cwd(), "mql", terminal, "Experts", fileName)
 

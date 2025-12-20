@@ -78,8 +78,7 @@ bool ValidateLicense()
       accountNum, broker, LICENSE_EA_CODE, LICENSE_EA_VERSION
    );
    
-   string headers = StringFormat("Content-Type: application/json
-X-API-Key: %s", LicenseKey);
+   string headers = StringFormat("Content-Type: application/json\r\nX-API-Key: %s", LicenseKey);
    
    char postData[];
    char resultData[];

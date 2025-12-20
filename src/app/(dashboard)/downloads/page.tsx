@@ -32,20 +32,20 @@ const categoryInfo: Record<Category, { label: string; icon: React.ElementType; d
 
 function getCategory(eaCode: string): Category {
   const code = eaCode.toLowerCase()
-  if (code.includes("martingale") || code.includes("dalembert") || code.includes("labouchere") || 
-      code.includes("parlay") || code.includes("oscar") || code.includes("hybrid_martingale")) {
+  if (code.includes("martingale") || code.includes("dalembert") || code.includes("labouchere") ||
+    code.includes("parlay") || code.includes("oscar") || code.includes("hybrid_martingale")) {
     return "martingale"
   }
   if (code.includes("manager") || code.includes("calculator") || code.includes("protector") ||
-      code.includes("monitor") || code.includes("copier") || code.includes("session") ||
-      code.includes("block") || code.includes("journal") || code.includes("news_filter_utility")) {
+    code.includes("monitor") || code.includes("copier") || code.includes("session") ||
+    code.includes("block") || code.includes("journal") || code.includes("news_filter_utility")) {
     return "utility"
   }
   // Advanced EAs (11-20)
-  if (code.includes("multi_timeframe") || code.includes("fibonacci_retracement") || 
-      code.includes("price_action") || code.includes("momentum") || code.includes("london") ||
-      code.includes("mean_reversion") || code.includes("keltner") || code.includes("williams") ||
-      code.includes("parabolic") || code.includes("hedge")) {
+  if (code.includes("multi_timeframe") || code.includes("fibonacci_retracement") ||
+    code.includes("price_action") || code.includes("momentum") || code.includes("london") ||
+    code.includes("mean_reversion") || code.includes("keltner") || code.includes("williams") ||
+    code.includes("parabolic") || code.includes("hedge")) {
     return "advanced"
   }
   return "basic"
@@ -69,24 +69,24 @@ export default function DownloadsPage() {
   const handleDownload = async (eaCode: string, terminal: "MT4" | "MT5") => {
     const key = `${eaCode}-${terminal}`
     setDownloadingEAs(prev => new Set(prev).add(key))
-    
+
     try {
       const res = await fetch(`/api/eas/${eaCode}/download?terminal=${terminal}`)
       if (!res.ok) {
         const error = await res.json()
         throw new Error(error.error || "Download failed")
       }
-      
+
       const blob = await res.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `${eaCode}.mq${terminal === "MT4" ? "4" : "5"}`
+      a.download = `${eaCode}.ex${terminal === "MT4" ? "4" : "5"}`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-      
+
       toast({ title: "Success", description: `${eaCode} (${terminal}) downloaded` })
     } catch (error) {
       toast({
@@ -105,22 +105,22 @@ export default function DownloadsPage() {
 
   const handleDownloadAll = async (terminal: "MT4" | "MT5") => {
     if (!data?.eas) return
-    
+
     toast({ title: "Starting downloads", description: `Downloading all ${terminal} files...` })
-    
+
     for (const ea of data.eas) {
       await handleDownload(ea.eaCode, terminal)
       // Small delay between downloads
       await new Promise(resolve => setTimeout(resolve, 500))
     }
-    
+
     toast({ title: "Complete", description: `All ${terminal} files downloaded` })
   }
 
   const filteredEAs = data?.eas?.filter((ea: ExpertAdvisor) => {
     const matchesSearch = ea.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         ea.eaCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         ea.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      ea.eaCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ea.description?.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = activeCategory === "all" || getCategory(ea.eaCode) === activeCategory
     return matchesSearch && matchesCategory
   }) || []
@@ -193,24 +193,22 @@ export default function DownloadsPage() {
               {filteredEAs.map((ea: ExpertAdvisor) => {
                 const category = getCategory(ea.eaCode)
                 const CategoryIcon = categoryInfo[category].icon
-                
+
                 return (
                   <Card key={ea.id} className="flex flex-col">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                          <div className={`rounded-lg p-2 ${
-                            category === "martingale" ? "bg-destructive/10" :
-                            category === "utility" ? "bg-blue-500/10" :
-                            category === "advanced" ? "bg-purple-500/10" :
-                            "bg-primary/10"
-                          }`}>
-                            <CategoryIcon className={`h-5 w-5 ${
-                              category === "martingale" ? "text-destructive" :
-                              category === "utility" ? "text-blue-500" :
-                              category === "advanced" ? "text-purple-500" :
-                              "text-primary"
-                            }`} />
+                          <div className={`rounded-lg p-2 ${category === "martingale" ? "bg-destructive/10" :
+                              category === "utility" ? "bg-blue-500/10" :
+                                category === "advanced" ? "bg-purple-500/10" :
+                                  "bg-primary/10"
+                            }`}>
+                            <CategoryIcon className={`h-5 w-5 ${category === "martingale" ? "text-destructive" :
+                                category === "utility" ? "text-blue-500" :
+                                  category === "advanced" ? "text-purple-500" :
+                                    "text-primary"
+                              }`} />
                           </div>
                           <div>
                             <CardTitle className="text-base">{ea.name}</CardTitle>

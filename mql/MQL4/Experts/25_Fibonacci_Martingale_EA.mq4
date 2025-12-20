@@ -90,7 +90,7 @@ double GetLotSize(double slPoints)
    double point = Point;
    double accountBalance = AccountBalance();
    
-   if(tickSize == 0 || point == 0 || tickValue == 0) return LotSize;
+   if(tickSize == 0 || point == 0 || tickValue == 0) return BaseLot;
    
    // Calculate risk amount in money
    double riskMoney = accountBalance * (RiskPercent / 100.0);
@@ -98,7 +98,7 @@ double GetLotSize(double slPoints)
    // Money per lot for 1 point movement = (TickValue / TickSize) * Point
    double moneyPerPointPerLot = (tickValue / tickSize) * point;
    
-   if(moneyPerPointPerLot == 0) return LotSize;
+   if(moneyPerPointPerLot == 0) return BaseLot;
    
    // Calculate lots: RiskMoney / (SL_Points * MoneyPerPointPerLot)
    double calculatedLots = riskMoney / (slPoints * moneyPerPointPerLot);

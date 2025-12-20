@@ -231,18 +231,29 @@ openssl rand -base64 32
 | 5 | Try to access `/admin` | Redirect to `/dashboard` | ☐ |
 
 ### Password Reset Test
-```
-❌ NOT IMPLEMENTED
 
-Workaround: Admin updates passwordHash directly in database
-```
+| Step | Action | Expected Result | Actual |
+|------|--------|-----------------|--------|
+| 1 | Navigate to `/login` | Login form with "Forgot password?" link | ☐ |
+| 2 | Click "Forgot your password?" | Redirect to `/forgot-password` | ☐ |
+| 3 | Enter registered email | Form accepts input | ☐ |
+| 4 | Click "Send Reset Link" | Success message shown | ☐ |
+| 5 | Check email | Email with reset link received | ☐ |
+| 6 | Click reset link | Opens `/reset-password?token=xxx` | ☐ |
+| 7 | Enter new password (2x) | Form accepts input | ☐ |
+| 8 | Click "Reset Password" | Success message, redirect to login | ☐ |
+| 9 | Login with new password | Dashboard loads | ☐ |
 
 ### Email Verification Test
-```
-❌ NOT IMPLEMENTED
 
-Note: Users are auto-approved with 14-day trial
-```
+| Step | Action | Expected Result | Actual |
+|------|--------|-----------------|--------|
+| 1 | Navigate to `/register` | Registration form | ☐ |
+| 2 | Complete registration | Success, redirect to login | ☐ |
+| 3 | Check email | Verification email received | ☐ |
+| 4 | Click verification link | Redirect to `/login?verified=true` | ☐ |
+| 5 | Login | Dashboard loads | ☐ |
+| 6 | Check user.emailVerified | Timestamp is set | ☐ |
 
 ---
 

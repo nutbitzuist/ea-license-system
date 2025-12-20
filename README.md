@@ -1,86 +1,158 @@
-# My Algo Stack
+# EA License System
 
-**Your Trading Infrastructure** — A comprehensive platform for automated trading with MetaTrader Expert Advisors.
+A SaaS platform for managing MetaTrader Expert Advisor (EA) licenses, enabling traders to register accounts, validate licenses, and download trading bots.
 
-## Features
+## What This App Does
 
-- **40+ Premium EAs**: Professional-grade trading algorithms for MT4/MT5
-- **Money Management**: Auto-lot sizing based on risk percentage
-- **Trailing Stop & Break Even**: Dynamic profit protection
-- **License Management**: Control which accounts can run your EAs
-- **14-Day Free Trial**: Test all features before subscribing
-- **Dashboard**: Manage MT accounts, view analytics, access API credentials
-- **Cloud-Ready**: Runs on your infrastructure or ours (coming soon)
+- **User Management:** Registration, login, account approval workflow
+- **Account Registration:** Users register their MT4/MT5 trading accounts
+- **License Validation:** EAs call `/api/validate` to verify license
+- **EA Downloads:** Users download compiled .ex4/.ex5 files
+- **Admin Panel:** Manage users, EAs, and access permissions
 
 ## Tech Stack
 
-- **Framework**: Next.js 14+ with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS + shadcn/ui
-- **Authentication**: NextAuth.js
-- **Database**: PostgreSQL (Supabase)
-- **ORM**: Prisma
+- **Frontend:** Next.js 14 (App Router), React 18, Tailwind CSS
+- **Backend:** Next.js API Routes
+- **Database:** PostgreSQL (Supabase) via Prisma
+- **Auth:** NextAuth.js (Credentials + JWT)
+- **Hosting:** Vercel (frontend), Railway (backend)
 
-## Getting Started
+## Setup (Local Development)
 
 ### Prerequisites
-
 - Node.js 18+
-- PostgreSQL database (Supabase recommended)
+- PostgreSQL database (or Supabase account)
 
 ### Installation
 
-1. Clone and install:
 ```bash
-cd myalgostack
+# Clone repository
+git clone https://github.com/nutbitzuist/ea-license-system.git
+cd ea-license-system
+
+# Install dependencies
 npm install
-```
 
-2. Configure environment:
-```bash
-cp .env.example .env
-# Edit .env with your database URL and secrets
-```
+# Copy environment file
+cp .env.example .env.local
 
-3. Set up database:
-```bash
-npx prisma generate
-npx prisma db push
-```
+# Edit .env.local with your values (see Environment Variables below)
 
-4. Run development server:
-```bash
+# Generate Prisma client
+npm run db:generate
+
+# Push schema to database
+npm run db:push
+
+# Seed database (optional)
+npm run db:seed
+
+# Start development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to access the platform.
+Open [http://localhost:3000](http://localhost:3000)
 
-## MQL Integration
+## Environment Variables
 
-Copy MQL files to your MetaTrader installation:
+Create `.env.local` with these variables:
 
-**MT5:** `mql/MQL5/Experts/` → `MQL5/Experts/`
-**MT4:** `mql/MQL4/Experts/` → `MQL4/Experts/`
-
-**Important:** Add the API URL to allowed WebRequest URLs in MetaTrader:
-`Tools -> Options -> Expert Advisors -> Allow WebRequest`
-
-## API
-
-### License Validation
 ```
-POST /api/validate
-Headers: X-API-Key: <your_license_key>
-Body: { accountNumber, brokerName, eaCode, eaVersion, terminalType }
+# Database
+DATABASE_URL=
+
+# NextAuth
+NEXTAUTH_URL=
+NEXTAUTH_SECRET=
+AUTH_SECRET=
+
+# Supabase (optional)
+NEXT_PUBLIC_SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# App
+NEXT_PUBLIC_APP_NAME=
+NEXT_PUBLIC_APP_URL=
 ```
 
-## Deployment
+## How to Run
 
 ```bash
+# Development
+npm run dev
+
+# Build for production
 npm run build
-# Deploy via Vercel CLI or GitHub integration
+
+# Start production server
+npm start
+
+# Database commands
+npm run db:generate   # Generate Prisma client
+npm run db:push       # Push schema changes
+npm run db:studio     # Open Prisma Studio
+npm run db:seed       # Seed data
 ```
+
+## How to Deploy
+
+### Push to GitHub
+```bash
+git add -A
+git commit -m "Your message"
+git push origin main
+```
+
+### Deploy to Vercel
+```bash
+vercel --prod --yes
+```
+
+### Deploy to Railway
+```bash
+railway up --detach
+```
+
+### All-in-One
+```bash
+git add -A && git commit -m "update" && git push origin main && vercel --prod --yes && railway up --detach
+```
+
+## Project Structure
+
+```
+├── src/
+│   ├── app/           # Next.js App Router pages
+│   ├── components/    # React components
+│   ├── lib/           # Utilities (auth, db, etc.)
+│   └── middleware.ts  # Route protection
+├── prisma/
+│   ├── schema.prisma  # Database schema
+│   └── seed.ts        # Seed data
+├── mql/
+│   ├── MQL4/Experts/  # MT4 EA files
+│   └── MQL5/Experts/  # MT5 EA files
+└── docs/              # Documentation
+```
+
+## Important Notes
+
+1. **New users require admin approval** before they can validate licenses
+2. **API Key** is used by EAs for validation (not JWT)
+3. **Compiled EA files** must be placed in `/mql/MQL4/Experts/` and `/mql/MQL5/Experts/`
+4. **Rate limiting** is in-memory and resets on cold starts
+5. **No email system** - password reset requires admin intervention
+
+## Documentation
+
+- [PRD.md](./docs/PRD.md) - Product requirements
+- [SPEC.md](./docs/SPEC.md) - Technical specification
+- [TASKS.md](./docs/TASKS.md) - Status and tasks
+- [DECISIONS.md](./docs/DECISIONS.md) - Architecture decisions
+- [TEST_PLAN.md](./docs/TEST_PLAN.md) - Testing guide
+- [ENGINEERING_STANDARD.md](./docs/ENGINEERING_STANDARD.md) - Coding standards
 
 ## License
 
-MIT
+Private - All rights reserved

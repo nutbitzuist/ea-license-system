@@ -102,6 +102,9 @@ function LoginForm() {
               "Sign In"
             )}
           </Button>
+          <Link href="/forgot-password" className="text-sm text-slate-400 hover:text-primary">
+            Forgot your password?
+          </Link>
           <p className="text-sm text-slate-400 text-center">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="text-primary hover:underline">

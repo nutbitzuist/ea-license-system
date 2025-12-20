@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { hash } from "bcryptjs"
 import { prisma } from "@/lib/db"
 import { registerSchema } from "@/lib/validations"
+import { sendVerificationEmail, generateToken } from "@/lib/email"
 import { z } from "zod"
 
 // Extended schema with optional referral code
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         isApproved: true,  // Auto-approve for free trial
         trialEndsAt,       // 14-day trial
+        emailVerified: null, // Not verified yet
         referredByCode: validatedData.referralCode || null,
       },
     })
@@ -68,9 +70,24 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Generate email verification token
+    const token = generateToken()
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+
+    await prisma.emailVerificationToken.create({
+      data: {
+        email: validatedData.email,
+        token,
+        expiresAt,
+      },
+    })
+
+    // Send verification email (non-blocking)
+    sendVerificationEmail(validatedData.email, token).catch(console.error)
+
     return NextResponse.json({
       success: true,
-      message: "Welcome to My Algo Stack! Your 14-day free trial has started.",
+      message: "Welcome to My Algo Stack! Please check your email to verify your account.",
       userId: user.id,
     })
   } catch (error) {

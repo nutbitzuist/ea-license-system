@@ -64,6 +64,7 @@ model User {
   isActive          Boolean          @default(true)
   isApproved        Boolean          @default(false)
   trialEndsAt       DateTime?        // 14-day free trial end date
+  emailVerified     DateTime?        // Null means not verified
   referralCode      String           @unique @default(cuid())
   referredByCode    String?          // Referral code used at signup
   createdAt         DateTime         @default(now())
@@ -249,4 +250,30 @@ model Referral {
 
   @@index([referrerId])
   @@map("referrals")
+}
+
+// ============================================
+// AUTH TOKENS
+// ============================================
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("email_verification_tokens")
 }

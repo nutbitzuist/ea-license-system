@@ -333,7 +333,7 @@ void CloseMissingPositions(ulong &masterTickets[])
          request.price = request.type == ORDER_TYPE_BUY ? 
             SymbolInfoDouble(request.symbol, SYMBOL_ASK) : SymbolInfoDouble(request.symbol, SYMBOL_BID);
          request.deviation = 10;
-         OrderSend(request, result);
+         if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
       }
    }
 }

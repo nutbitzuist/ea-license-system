@@ -257,7 +257,7 @@ void ModifySL(ulong ticket, double newSL)
    request.position = ticket;
    request.sl = NormalizeDouble(newSL, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS));
    request.tp = PositionGetDouble(POSITION_TP);
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 
 void ClosePosition(ulong ticket)
@@ -272,7 +272,7 @@ void ClosePosition(ulong ticket)
    request.type = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
    request.price = request.type == ORDER_TYPE_BUY ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    request.deviation = 10;
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 
 void PartialClosePosition(ulong ticket, double volume)
@@ -287,7 +287,7 @@ void PartialClosePosition(ulong ticket, double volume)
    request.type = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
    request.price = request.type == ORDER_TYPE_BUY ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    request.deviation = 10;
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 //+------------------------------------------------------------------+
 

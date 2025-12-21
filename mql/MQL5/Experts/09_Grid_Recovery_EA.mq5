@@ -307,7 +307,8 @@ void CloseAllPositions()
             request.position = PositionGetTicket(i);
             request.deviation = 10;
             
-            OrderSend(request, result);
+            if(!OrderSend(request, result))
+               Print("Close position failed: ", GetLastError());
          }
       }
    }

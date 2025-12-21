@@ -292,7 +292,7 @@ void OpenPosition(ENUM_ORDER_TYPE orderType)
    request.magic = MagicNumber;
    request.comment = "Parlay #" + IntegerToString(g_parlayCount + 1);
    request.deviation = 10;
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 //+------------------------------------------------------------------+
 

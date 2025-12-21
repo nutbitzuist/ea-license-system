@@ -275,7 +275,7 @@ void OpenPosition(ENUM_ORDER_TYPE orderType)
    request.magic = MagicNumber;
    request.comment = "Mean Revert";
    request.deviation = 10;
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 
 void ClosePosition(ulong ticket)
@@ -290,7 +290,7 @@ void ClosePosition(ulong ticket)
    request.price = (request.type == ORDER_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    request.position = ticket;
    request.deviation = 10;
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 //+------------------------------------------------------------------+
 

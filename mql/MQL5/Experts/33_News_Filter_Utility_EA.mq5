@@ -269,7 +269,7 @@ void CloseAllTrades()
       request.type = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
       request.price = request.type == ORDER_TYPE_BUY ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
       request.deviation = 10;
-      OrderSend(request, result);
+      if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
    }
 }
 

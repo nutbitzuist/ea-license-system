@@ -297,7 +297,8 @@ void UpdateTrailingStop(ulong ticket, double atrValue)
          request.position = ticket;
          request.sl = newSL;
          request.tp = PositionGetDouble(POSITION_TP);
-         OrderSend(request, result);
+         if(!OrderSend(request, result))
+            Print("TrailingSL update failed: ", GetLastError());
       }
    }
    else
@@ -310,7 +311,8 @@ void UpdateTrailingStop(ulong ticket, double atrValue)
          request.position = ticket;
          request.sl = newSL;
          request.tp = PositionGetDouble(POSITION_TP);
-         OrderSend(request, result);
+         if(!OrderSend(request, result))
+            Print("TrailingSL update failed: ", GetLastError());
       }
    }
 }

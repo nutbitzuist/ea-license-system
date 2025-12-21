@@ -305,7 +305,7 @@ void CloseAllPositions()
             request.price = (request.type == ORDER_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
             request.position = PositionGetTicket(i);
             request.deviation = 10;
-            OrderSend(request, result);
+            if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
          }
       }
    }

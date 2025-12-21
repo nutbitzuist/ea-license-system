@@ -205,7 +205,7 @@ void CloseAllPositions()
                request.price = SymbolInfoDouble(symbol, SYMBOL_ASK);
             }
             
-            OrderSend(request, result);
+            if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
          }
       }
    }

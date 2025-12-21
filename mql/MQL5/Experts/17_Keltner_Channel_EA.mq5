@@ -285,7 +285,7 @@ void OpenPosition(ENUM_ORDER_TYPE orderType, double upper, double lower)
    request.magic = MagicNumber;
    request.comment = "Keltner";
    request.deviation = 10;
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 //+------------------------------------------------------------------+
 

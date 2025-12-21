@@ -265,7 +265,7 @@ void UpdateTrailingStops()
                   request.position = PositionGetTicket(i);
                   request.sl = newSL;
                   request.tp = PositionGetDouble(POSITION_TP);
-                  OrderSend(request, result);
+                  if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
                }
             }
             else
@@ -278,7 +278,7 @@ void UpdateTrailingStops()
                   request.position = PositionGetTicket(i);
                   request.sl = newSL;
                   request.tp = PositionGetDouble(POSITION_TP);
-                  OrderSend(request, result);
+                  if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
                }
             }
          }
@@ -331,7 +331,7 @@ void OpenPosition(ENUM_ORDER_TYPE orderType)
    request.magic = MagicNumber;
    request.comment = "Momentum BO";
    request.deviation = 10;
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 //+------------------------------------------------------------------+
 

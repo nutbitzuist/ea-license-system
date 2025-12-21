@@ -272,7 +272,7 @@ void OpenPosition(ENUM_ORDER_TYPE orderType)
    request.magic = MagicNumber;
    request.comment = "DAlembert";
    request.deviation = 10;
-   OrderSend(request, result);
+   if(!OrderSend(request, result)) Print("OrderSend failed: ", GetLastError());
 }
 //+------------------------------------------------------------------+
 

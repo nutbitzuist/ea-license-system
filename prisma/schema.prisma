@@ -279,3 +279,38 @@ model EmailVerificationToken {
   @@index([email])
   @@map("email_verification_tokens")
 }
+
+// ============================================
+// PROMO CODES
+// ============================================
+
+model PromoCode {
+  id              String           @id @default(cuid())
+  code            String           @unique
+  description     String?
+  daysGranted     Int              @default(0)   // Extra trial days
+  subscriptionTier SubscriptionTier? // If set, upgrades user to this tier
+  maxUsages       Int              @default(0)   // 0 = unlimited
+  currentUsages   Int              @default(0)
+  isActive        Boolean          @default(true)
+  expiresAt       DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  usages          PromoCodeUsage[]
+
+  @@map("promo_codes")
+}
+
+model PromoCodeUsage {
+  id          String    @id @default(cuid())
+  promoCodeId String
+  userId      String
+  usedAt      DateTime  @default(now())
+
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+
+  @@unique([promoCodeId, userId])
+  @@index([userId])
+  @@map("promo_code_usages")
+}

@@ -8,9 +8,10 @@ import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 import { z } from "zod"
 
 
-// Extended schema with optional referral code
-const registerWithReferralSchema = registerSchema.extend({
+// Extended schema with optional referral code and promo code
+const registerWithCodesSchema = registerSchema.extend({
   referralCode: z.string().optional(),
+  promoCode: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const validatedData = registerWithReferralSchema.parse(body)
+    const validatedData = registerWithCodesSchema.parse(body)
 
 
     // Check if user already exists
@@ -63,12 +64,45 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Validate promo code if provided
+    let promoCodeData: {
+      id: string
+      daysGranted: number
+      subscriptionTier: string | null
+    } | null = null
+
+    if (validatedData.promoCode) {
+      const promoCode = await prisma.promoCode.findUnique({
+        where: { code: validatedData.promoCode.toUpperCase() },
+      })
+
+      if (promoCode) {
+        // Check if promo code is valid
+        const now = new Date()
+        const isExpired = promoCode.expiresAt && promoCode.expiresAt < now
+        const isMaxedOut = promoCode.maxUsages > 0 && promoCode.currentUsages >= promoCode.maxUsages
+
+        if (promoCode.isActive && !isExpired && !isMaxedOut) {
+          promoCodeData = {
+            id: promoCode.id,
+            daysGranted: promoCode.daysGranted,
+            subscriptionTier: promoCode.subscriptionTier,
+          }
+        }
+      }
+    }
+
     // Hash password
     const passwordHash = await hash(validatedData.password, 12)
 
-    // Calculate trial end date (14 days from now)
+    // Calculate trial end date (14 days from now + promo bonus)
     const trialEndsAt = new Date()
-    trialEndsAt.setDate(trialEndsAt.getDate() + 14)
+    const baseDays = 14
+    const bonusDays = promoCodeData?.daysGranted || 0
+    trialEndsAt.setDate(trialEndsAt.getDate() + baseDays + bonusDays)
+
+    // Determine subscription tier
+    const subscriptionTier = promoCodeData?.subscriptionTier as "TIER_1" | "TIER_2" | "TIER_3" | undefined
 
     // Generate email verification token
     const token = generateToken()
@@ -84,9 +118,10 @@ export async function POST(request: NextRequest) {
           passwordHash,
           name: validatedData.name,
           isApproved: true,  // Auto-approve for free trial
-          trialEndsAt,       // 14-day trial
+          trialEndsAt,       // 14-day trial + bonus
           emailVerified: null, // Not verified yet
           referredByCode: validatedData.referralCode || null,
+          subscriptionTier: subscriptionTier || "TIER_1",
         },
       })
 
@@ -99,6 +134,22 @@ export async function POST(request: NextRequest) {
             referralCode: validatedData.referralCode!,
             status: "PENDING",
           },
+        })
+      }
+
+      // Record promo code usage if used
+      if (promoCodeData) {
+        await tx.promoCodeUsage.create({
+          data: {
+            promoCodeId: promoCodeData.id,
+            userId: newUser.id,
+          },
+        })
+
+        // Increment usage counter
+        await tx.promoCode.update({
+          where: { id: promoCodeData.id },
+          data: { currentUsages: { increment: 1 } },
         })
       }
 
@@ -118,9 +169,17 @@ export async function POST(request: NextRequest) {
     // Send verification email (non-blocking)
     sendVerificationEmail(validatedData.email, token).catch(console.error)
 
+    // Build success message
+    let message = "Welcome to My Algo Stack! Please check your email to verify your account."
+    if (promoCodeData) {
+      if (promoCodeData.daysGranted > 0) {
+        message = `Welcome! Your promo code added ${promoCodeData.daysGranted} bonus days to your trial. Please verify your email.`
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      message: "Welcome to My Algo Stack! Please check your email to verify your account.",
+      message,
       userId: user.id,
     })
   } catch (error) {

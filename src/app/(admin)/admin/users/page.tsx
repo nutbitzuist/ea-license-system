@@ -7,9 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, Loader2, Eye, Check, X } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Switch } from "@/components/ui/switch"
+import { Search, Loader2, Eye, Check, X, UserPlus, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface User {
@@ -30,6 +34,11 @@ interface User {
 export default function AdminUsersPage() {
   const [search, setSearch] = useState("")
   const [approvedFilter, setApprovedFilter] = useState<string>("all")
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false)
+  const [newUserName, setNewUserName] = useState("")
+  const [newUserEmail, setNewUserEmail] = useState("")
+  const [newUserTier, setNewUserTier] = useState<string>("TIER_1")
+  const [sendWelcomeEmail, setSendWelcomeEmail] = useState(true)
   const router = useRouter()
   const { toast } = useToast()
   const queryClient = useQueryClient()
@@ -65,13 +74,144 @@ export default function AdminUsersPage() {
     },
   })
 
+  const createUserMutation = useMutation({
+    mutationFn: async (data: { name: string; email: string; subscriptionTier: string; sendWelcomeEmail: boolean }) => {
+      const res = await fetch("/api/admin/users/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || "Failed to create user")
+      return result
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] })
+      toast({ title: "Success", description: data.message })
+      setIsAddUserOpen(false)
+      setNewUserName("")
+      setNewUserEmail("")
+      setNewUserTier("TIER_1")
+      setSendWelcomeEmail(true)
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" })
+    },
+  })
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/users/${id}`, {
+        method: "DELETE",
+      })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || "Failed to delete user")
+      return result
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] })
+      toast({ title: "User Deleted", description: data.message })
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" })
+    },
+  })
+
+  const handleCreateUser = (e: React.FormEvent) => {
+    e.preventDefault()
+    createUserMutation.mutate({
+      name: newUserName,
+      email: newUserEmail,
+      subscriptionTier: newUserTier,
+      sendWelcomeEmail,
+    })
+  }
+
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Users</h2>
-        <p className="text-muted-foreground">
-          Manage user accounts and permissions
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Users</h2>
+          <p className="text-muted-foreground">
+            Manage user accounts and permissions
+          </p>
+        </div>
+        <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add User
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New User</DialogTitle>
+              <DialogDescription>
+                Create a new user account. A welcome email with password setup link will be sent.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreateUser}>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    placeholder="John Doe"
+                    value={newUserName}
+                    onChange={(e) => setNewUserName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="john@example.com"
+                    value={newUserEmail}
+                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tier">Subscription Tier</Label>
+                  <Select value={newUserTier} onValueChange={setNewUserTier}>
+                    <SelectTrigger id="tier">
+                      <SelectValue placeholder="Select tier" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TIER_1">Beginner (1 account)</SelectItem>
+                      <SelectItem value="TIER_2">Trader (5 accounts)</SelectItem>
+                      <SelectItem value="TIER_3">Investor (10 accounts)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="sendEmail">Send Welcome Email</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Email includes password setup link
+                    </p>
+                  </div>
+                  <Switch
+                    id="sendEmail"
+                    checked={sendWelcomeEmail}
+                    onCheckedChange={setSendWelcomeEmail}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsAddUserOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={createUserMutation.isPending}>
+                  {createUserMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Create User
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
@@ -182,6 +322,37 @@ export default function AdminUsersPage() {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
+                        {user.role !== "ADMIN" && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Delete User"
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete User</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete {user.name} ({user.email})?
+                                  This action cannot be undone and will remove all their data.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deleteUserMutation.mutate(user.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

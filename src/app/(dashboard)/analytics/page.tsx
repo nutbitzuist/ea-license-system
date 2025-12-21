@@ -60,7 +60,7 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">License Analytics</h2>
+        <h2 className="text-3xl font-bold tracking-tight">License Usage</h2>
         <p className="text-muted-foreground">
           Monitor your EA license usage and validation statistics
         </p>

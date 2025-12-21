@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   LayoutDashboard,
   Users,
@@ -17,6 +18,7 @@ import {
   TrendingUp,
   Bell,
   Gift,
+  MessageSquare,
 } from "lucide-react"
 
 
@@ -38,7 +40,7 @@ const userNavItems = [
     icon: TrendingUp,
   },
   {
-    title: "Analytics",
+    title: "License Usage",
     href: "/analytics",
     icon: Activity,
   },
@@ -68,6 +70,11 @@ const userNavItems = [
     icon: BookOpen,
   },
   {
+    title: "Contact",
+    href: "/contact",
+    icon: MessageSquare,
+  },
+  {
     title: "Settings",
     href: "/settings",
     icon: Settings,
@@ -89,6 +96,11 @@ const adminNavItems = [
     title: "Expert Advisors",
     href: "/admin/eas",
     icon: Bot,
+  },
+  {
+    title: "Promo Codes",
+    href: "/admin/promo-codes",
+    icon: Gift,
   },
   {
     title: "Validation Logs",
@@ -134,8 +146,12 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
           )
         })}
       </nav>
-      {!isAdmin && (
-        <div className="border-t p-4">
+      <div className="border-t p-4 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Theme</span>
+          <ThemeToggle />
+        </div>
+        {!isAdmin && (
           <Link
             href="/admin"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
@@ -143,8 +159,8 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
             <Shield className="h-4 w-4" />
             Admin Panel
           </Link>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

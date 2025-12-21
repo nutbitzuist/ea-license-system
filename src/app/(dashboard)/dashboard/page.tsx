@@ -16,7 +16,9 @@ export default function DashboardPage() {
       if (!res.ok) throw new Error("Failed to fetch stats")
       return res.json()
     },
+    staleTime: 30 * 1000, // Consider fresh for 30 seconds
   })
+
 
   return (
     <div className="space-y-6">

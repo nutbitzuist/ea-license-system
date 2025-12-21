@@ -29,7 +29,9 @@ export default function EAsPage() {
       if (!res.ok) throw new Error("Failed to fetch EAs")
       return res.json()
     },
+    staleTime: 60 * 1000, // Consider fresh for 60 seconds
   })
+
 
   const handleDownload = async (eaCode: string, terminal: "MT4" | "MT5") => {
     try {
@@ -38,7 +40,7 @@ export default function EAsPage() {
         const error = await res.json()
         throw new Error(error.error || "Download failed")
       }
-      
+
       const blob = await res.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
@@ -48,7 +50,7 @@ export default function EAsPage() {
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-      
+
       toast({ title: "Success", description: "Download started" })
     } catch (error) {
       toast({
@@ -94,7 +96,7 @@ export default function EAsPage() {
                 {ea.description && (
                   <p className="text-sm text-muted-foreground">{ea.description}</p>
                 )}
-                
+
                 {ea.expiresAt && (
                   <div className="text-sm">
                     <span className="text-muted-foreground">Expires: </span>

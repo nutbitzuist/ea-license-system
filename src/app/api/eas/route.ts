@@ -32,7 +32,12 @@ export async function GET() {
         expiresAt: access.expiresAt,
       }))
 
-    return NextResponse.json({ eas })
+    return NextResponse.json({ eas }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=300',
+      },
+    })
+
   } catch (error) {
     console.error("Get EAs error:", error)
     return NextResponse.json({ error: "Failed to fetch EAs" }, { status: 500 })

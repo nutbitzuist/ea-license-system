@@ -35,11 +35,22 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUser) {
+      // If user exists but not verified, suggest checking email
+      if (!existingUser.emailVerified) {
+        return NextResponse.json(
+          {
+            error: "This email is already registered but not verified. Please check your inbox for the verification link.",
+            canResend: true,
+          },
+          { status: 400 }
+        )
+      }
       return NextResponse.json(
         { error: "Email already registered" },
         { status: 400 }
       )
     }
+
 
     // Find referrer if referral code provided
     let referrerId: string | null = null

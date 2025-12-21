@@ -3,11 +3,11 @@
 import { useQuery } from "@tanstack/react-query"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { 
-  BarChart3, 
-  CheckCircle2, 
-  XCircle, 
-  Clock, 
+import {
+  BarChart3,
+  CheckCircle2,
+  XCircle,
+  Clock,
   Bot,
   Loader2,
   TrendingUp,
@@ -42,6 +42,7 @@ export default function AnalyticsPage() {
       if (!res.ok) throw new Error("Failed to fetch analytics")
       return res.json()
     },
+    staleTime: 60 * 1000, // Consider fresh for 60 seconds
   })
 
   if (isLoading) {
@@ -52,7 +53,7 @@ export default function AnalyticsPage() {
     )
   }
 
-  const successRate = data?.totalValidations 
+  const successRate = data?.totalValidations
     ? ((data.successfulValidations / data.totalValidations) * 100).toFixed(1)
     : "0"
 
@@ -131,10 +132,10 @@ export default function AnalyticsPage() {
                   <div className="w-48 truncate font-medium">{ea.eaCode}</div>
                   <div className="flex-1">
                     <div className="h-2 rounded-full bg-muted overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-primary transition-all"
-                        style={{ 
-                          width: `${(ea.count / Math.max(...data.eaUsage.map(e => e.count))) * 100}%` 
+                        style={{
+                          width: `${(ea.count / Math.max(...data.eaUsage.map(e => e.count))) * 100}%`
                         }}
                       />
                     </div>
@@ -171,8 +172,8 @@ export default function AnalyticsPage() {
           {data?.recentLogs && data.recentLogs.length > 0 ? (
             <div className="space-y-3">
               {data.recentLogs.map((log) => (
-                <div 
-                  key={log.id} 
+                <div
+                  key={log.id}
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
                 >
                   <div className="flex items-center gap-3">

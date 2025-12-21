@@ -51,7 +51,9 @@ export default function AccountsPage() {
       if (!res.ok) throw new Error("Failed to fetch accounts")
       return res.json()
     },
+    staleTime: 30 * 1000, // Consider fresh for 30 seconds
   })
+
 
 
   const createMutation = useMutation({

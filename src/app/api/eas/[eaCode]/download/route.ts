@@ -102,8 +102,10 @@ export async function GET(
     }
 
     const extension = terminal === "MT4" ? "ex4" : "ex5"
+    const folderName = terminal === "MT4" ? "MQL4" : "MQL5"
     const fileName = `${fileBaseName}.${extension}`
-    const filePath = join(process.cwd(), "mql", terminal, "Experts", fileName)
+    const filePath = join(process.cwd(), "mql", folderName, "Experts", fileName)
+
 
     if (!existsSync(filePath)) {
       return NextResponse.json(

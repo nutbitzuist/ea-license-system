@@ -268,6 +268,25 @@ async function main() {
       description: "Automatic trade logging and statistics. Exports to CSV, calculates win rate, profit factor, expectancy, max drawdown. Essential for performance analysis.",
       currentVersion: "1.0.0",
     },
+    // Additional EAs (41-43)
+    {
+      eaCode: "scalper_pro_v1",
+      name: "Scalper Pro",
+      description: "Professional scalping EA for high-frequency trading. Uses RSI momentum with spread filter for quick entries and exits. Tight stops with small profit targets. Best on M1-M5 with low spread pairs.",
+      currentVersion: "1.0.0",
+    },
+    {
+      eaCode: "trend_master_v2",
+      name: "Trend Master",
+      description: "Trend-following EA with advanced risk management. Uses ADX for trend strength, MA for direction, and MACD for momentum confirmation. Only trades strong trends. Best on H1-H4.",
+      currentVersion: "2.1.0",
+    },
+    {
+      eaCode: "grid_trader_v1",
+      name: "Grid Trader",
+      description: "Grid trading EA for ranging markets. Opens grid of buy and sell orders at fixed intervals. Uses ATR for dynamic grid spacing. Includes drawdown protection. HIGH RISK - use with caution!",
+      currentVersion: "1.5.0",
+    },
   ]
 
   for (const ea of sampleEAs) {

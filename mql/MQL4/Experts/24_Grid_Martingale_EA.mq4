@@ -77,7 +77,7 @@ void OnTick()
 }
 
 void OpenGridOrder() { double lot = NormalizeDouble(InitialLot * MathPow(LotMultiplier, g_gridLevel), 2); int orderType = (g_direction == 1) ? OP_BUY : OP_SELL; double price = (orderType == OP_BUY) ? Ask : Bid; int ticket = OrderSend(Symbol(), orderType, lot, price, 10, 0, 0, "Grid L" + IntegerToString(g_gridLevel + 1), MagicNumber, 0, clrNONE); if(ticket > 0) { g_lastGridPrice = price; g_gridLevel++; } }
-void CloseAllOrders() { for(int i = OrdersTotal() - 1; i >= 0; i--) { if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) { if(OrderMagicNumber() == MagicNumber && OrderSymbol() == Symbol()) OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY) ? Bid : Ask, 10, clrNONE); } } }
+void CloseAllOrders() { for(int i = OrdersTotal() - 1; i >= 0; i--) { if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) { if(OrderMagicNumber() == MagicNumber && OrderSymbol() == Symbol()) if(!OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY) ? Bid : Ask, 10, clrNONE)) Print("OrderClose failed: ", GetLastError()); } } }
 //+------------------------------------------------------------------+
 
 

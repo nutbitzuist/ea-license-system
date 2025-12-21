@@ -94,6 +94,10 @@ export async function GET(
       "order_block_finder_ea": "38_Order_Block_Finder_EA",
       "auto_lot_calculator_ea": "39_Auto_Lot_Calculator_EA",
       "trade_journal_ea": "40_Trade_Journal_EA",
+      // Additional EAs (41-43)
+      "scalper_pro_v1": "41_Scalper_Pro_EA",
+      "trend_master_v2": "42_Trend_Master_EA",
+      "grid_trader_v1": "43_Grid_Trader_EA",
     }
 
     const fileBaseName = eaCodeToFileMap[eaCode]
@@ -105,6 +109,11 @@ export async function GET(
     const folderName = terminal === "MT4" ? "MQL4" : "MQL5"
     const fileName = `${fileBaseName}.${extension}`
     const filePath = join(process.cwd(), "mql", folderName, "Experts", fileName)
+
+    console.log(`[Download Debug] Request for eaCode: ${eaCode}, Terminal: ${terminal}`)
+    console.log(`[Download Debug] Mapped to file: ${fileName}`)
+    console.log(`[Download Debug] Full path: ${filePath}`)
+    console.log(`[Download Debug] Exists: ${existsSync(filePath)}`)
 
 
     if (!existsSync(filePath)) {

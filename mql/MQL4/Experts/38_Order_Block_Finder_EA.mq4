@@ -15,6 +15,7 @@
 #define LICENSE_GRACE_PERIOD 86400
 
 input string   LicenseKey = "";
+input int      MagicNumber = 0;
 input int      LookbackBars = 100;
 input double   MinMoveMultiplier = 2.0;
 input int      ATR_Period = 14;

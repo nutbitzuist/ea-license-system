@@ -43,6 +43,11 @@ input bool     AlertOnApproach = true;
 input int      ApproachPips = 20;
 input color    DemandColor = clrDodgerBlue;
 input color    SupplyColor = clrCrimson;
+input int      MagicNumber = 0;          // Magic Number
+
+//--- MQL4 COMPATIBILITY WRAPPERS REMOVED (BUILT-IN) ---
+// Functions iOpen, iClose, iHigh, iLow, iTime are available in this compiler environment.
+//----------------------------------------------
 
 //--- MONEY MANAGEMENT ---
 input bool     UseMoneyManagement = true;   // Use Risk % for Lot Size
@@ -414,7 +419,7 @@ void ManagePositions()
                if(newSL > currentSL && (currentSL == 0 || newSL > currentSL))
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -433,7 +438,7 @@ void ManagePositions()
                if(newSL < currentSL || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -457,7 +462,7 @@ void ManagePositions()
                if(newSL > currentSL + TrailingStep * point)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -476,7 +481,7 @@ void ManagePositions()
                if(newSL < currentSL - TrailingStep * point || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;

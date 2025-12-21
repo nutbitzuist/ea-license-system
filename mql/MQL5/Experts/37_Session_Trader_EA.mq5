@@ -39,6 +39,7 @@
 // USER INPUT PARAMETERS
 //=============================================================================
 input string   LicenseKey = "";          // License Key (from dashboard)
+input int      MagicNumber = 0;          // Magic Number
 input int      GMTOffset = 0;            // Your broker's GMT offset
 input bool     AlertOnOverlap = true;
 input bool     ShowSessionBoxes = true;
@@ -350,7 +351,7 @@ void ManagePositions()
                if(newSL > currentSL && (currentSL == 0 || newSL > currentSL))
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -369,7 +370,7 @@ void ManagePositions()
                if(newSL < currentSL || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -393,7 +394,7 @@ void ManagePositions()
                if(newSL > currentSL + TrailingStep * point)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -412,7 +413,7 @@ void ManagePositions()
                if(newSL < currentSL - TrailingStep * point || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;

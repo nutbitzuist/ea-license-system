@@ -271,7 +271,7 @@ void OnTick()
 void OpenHedge()
 {
    MqlTradeRequest request = {};
-   MqlTradeResult result = {};
+   MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
    
    // Open BUY
    request.action = TRADE_ACTION_DEAL;
@@ -322,7 +322,7 @@ void UpdateTrailingStop(ulong ticket)
    double trailDistance = g_atr[0] * ATR_Multiplier;
    
    MqlTradeRequest request = {};
-   MqlTradeResult result = {};
+   MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
    
    if(PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY)
    {
@@ -355,7 +355,7 @@ void UpdateTrailingStop(ulong ticket)
 void ClosePosition(ulong ticket)
 {
    MqlTradeRequest request = {};
-   MqlTradeResult result = {};
+   MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
    if(!PositionSelectByTicket(ticket)) return;
    request.action = TRADE_ACTION_DEAL;
    request.symbol = _Symbol;
@@ -435,7 +435,7 @@ void ManagePositions()
                if(newSL > currentSL && (currentSL == 0 || newSL > currentSL))
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -454,7 +454,7 @@ void ManagePositions()
                if(newSL < currentSL || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -478,7 +478,7 @@ void ManagePositions()
                if(newSL > currentSL + TrailingStep * point)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -497,7 +497,7 @@ void ManagePositions()
                if(newSL < currentSL - TrailingStep * point || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;

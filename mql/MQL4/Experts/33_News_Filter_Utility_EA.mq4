@@ -23,6 +23,7 @@ input int      FridayCloseHour = 20;
 input bool     EnableMondayDelay = true;
 input int      MondayStartHour = 2;
 input bool     CloseOnRestriction = false;
+input int      MagicNumber = 0;
 input int      MagicFilter = 0;
 
 //--- MONEY MANAGEMENT ---
@@ -68,7 +69,7 @@ void OnTick()
 }
 
 bool CheckTradingAllowed() { int hour = TimeHour(TimeCurrent()); int dayOfWeek = TimeDayOfWeek(TimeCurrent()); if(EnableFridayClose && dayOfWeek == 5 && hour >= FridayCloseHour) return false; if(dayOfWeek == 0 || dayOfWeek == 6) return false; if(EnableMondayDelay && dayOfWeek == 1 && hour < MondayStartHour) return false; if(EnableTradingHours && (hour < TradingStartHour || hour >= TradingEndHour)) return false; return true; }
-void CloseAllTrades() { for(int i = OrdersTotal() - 1; i >= 0; i--) { if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue; if(OrderSymbol() != Symbol()) continue; if(MagicFilter > 0 && OrderMagicNumber() != MagicFilter) continue; OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY) ? Bid : Ask, 10, clrNONE); } }
+void CloseAllTrades() { for(int i = OrdersTotal() - 1; i >= 0; i--) { if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue; if(OrderSymbol() != Symbol()) continue; if(MagicFilter > 0 && OrderMagicNumber() != MagicFilter) continue; if(!OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY) ? Bid : Ask, 10, clrNONE)) Print("OrderClose failed: ", GetLastError()); } }
 void UpdateDisplay() { string status = g_tradingAllowed ? "TRADING ALLOWED" : "TRADING PAUSED"; color clr = g_tradingAllowed ? clrLime : clrRed; if(ObjectFind(0, "NF_Status") < 0) { ObjectCreate(0, "NF_Status", OBJ_LABEL, 0, 0, 0); ObjectSetInteger(0, "NF_Status", OBJPROP_XDISTANCE, 20); ObjectSetInteger(0, "NF_Status", OBJPROP_YDISTANCE, 20); ObjectSetInteger(0, "NF_Status", OBJPROP_FONTSIZE, 12); } ObjectSetString(0, "NF_Status", OBJPROP_TEXT, status); ObjectSetInteger(0, "NF_Status", OBJPROP_COLOR, clr); }
 //+------------------------------------------------------------------+
 

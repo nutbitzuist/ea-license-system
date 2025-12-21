@@ -173,13 +173,13 @@ void UpdateTrailingStop(int ticket, double atr)
    {
       double newSL = Bid - trailDistance;
       if(newSL > currentSL && newSL > openPrice)
-         OrderModify(ticket, openPrice, newSL, 0, 0, clrNONE);
+         if(!OrderModify(ticket, openPrice, newSL, 0, 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
    }
    else
    {
       double newSL = Ask + trailDistance;
       if((currentSL == 0 || newSL < currentSL) && newSL < openPrice)
-         OrderModify(ticket, openPrice, newSL, 0, 0, clrNONE);
+         if(!OrderModify(ticket, openPrice, newSL, 0, 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
    }
 }
 

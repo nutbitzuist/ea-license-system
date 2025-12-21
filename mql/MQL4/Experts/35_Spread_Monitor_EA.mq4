@@ -15,6 +15,7 @@
 #define LICENSE_GRACE_PERIOD 86400
 
 input string   LicenseKey = "";
+input int      MagicNumber = 0;
 input double   MaxSpreadPips = 3.0;
 input bool     EnableAlerts = true;
 

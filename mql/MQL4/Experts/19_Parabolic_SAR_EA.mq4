@@ -136,9 +136,9 @@ void UpdateTrailingStops(double sarValue)
       if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES) && OrderMagicNumber() == MagicNumber && OrderSymbol() == Symbol())
       {
          if(OrderType() == OP_BUY && sarValue < Bid && sarValue > OrderStopLoss())
-            OrderModify(OrderTicket(), OrderOpenPrice(), sarValue, OrderTakeProfit(), 0, clrNONE);
+            if(!OrderModify(OrderTicket(), OrderOpenPrice(), sarValue, OrderTakeProfit(), 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
          else if(OrderType() == OP_SELL && sarValue > Ask && (OrderStopLoss() == 0 || sarValue < OrderStopLoss()))
-            OrderModify(OrderTicket(), OrderOpenPrice(), sarValue, OrderTakeProfit(), 0, clrNONE);
+            if(!OrderModify(OrderTicket(), OrderOpenPrice(), sarValue, OrderTakeProfit(), 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
       }
    }
 }

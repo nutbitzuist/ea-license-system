@@ -38,6 +38,7 @@
 // USER INPUT PARAMETERS
 //=============================================================================
 input string   LicenseKey = "";          // License Key (from dashboard)
+input int      MagicNumber = 0;          // Magic Number
 enum SIZING_METHOD { FIXED_RISK, FIXED_FRACTIONAL, KELLY_CRITERION };
 
 input SIZING_METHOD Method = FIXED_RISK;
@@ -51,7 +52,6 @@ input bool          ShowPanel = true;
 
 //--- MONEY MANAGEMENT ---
 input bool     UseMoneyManagement = true;   // Use Risk % for Lot Size
-input double   RiskPercent        = 2.0;    // Risk per trade (%)
 
 //--- TRAILING STOP & BREAK EVEN ---
 input bool     UseTrailingStop    = true;   // Enable Trailing Stop
@@ -365,7 +365,7 @@ void ManagePositions()
                if(newSL > currentSL && (currentSL == 0 || newSL > currentSL))
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -384,7 +384,7 @@ void ManagePositions()
                if(newSL < currentSL || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -408,7 +408,7 @@ void ManagePositions()
                if(newSL > currentSL + TrailingStep * point)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -427,7 +427,7 @@ void ManagePositions()
                if(newSL < currentSL - TrailingStep * point || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;

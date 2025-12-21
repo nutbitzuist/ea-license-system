@@ -82,14 +82,14 @@ void OnTick()
       if(EnablePartialClose && profitPips >= PartialCloseTriggerPips && lots > 0.02)
       {
          double closeLots = NormalizeDouble(lots * PartialClosePercent / 100, 2);
-         if(closeLots >= 0.01) OrderClose(OrderTicket(), closeLots, currentPrice, 10, clrNONE);
+         if(closeLots >= 0.01) if(!OrderClose(OrderTicket(), closeLots, currentPrice, 10, clrNONE)) Print("OrderClose failed: ", GetLastError());
       }
       
       if(EnableBreakEven && profitPips >= BreakEvenTriggerPips)
       {
          double beLevel = isBuy ? openPrice + BreakEvenPlusPips * Point : openPrice - BreakEvenPlusPips * Point;
          if((isBuy && currentSL < beLevel) || (!isBuy && (currentSL > beLevel || currentSL == 0)))
-            OrderModify(OrderTicket(), openPrice, beLevel, OrderTakeProfit(), 0, clrNONE);
+            if(!OrderModify(OrderTicket(), openPrice, beLevel, OrderTakeProfit(), 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
       }
       
       if(EnableTrailing && profitPips > 0)
@@ -98,9 +98,9 @@ void OnTick()
          double newSL = isBuy ? currentPrice - trailDistance : currentPrice + trailDistance;
          
          if(isBuy && newSL > currentSL && newSL > openPrice)
-            OrderModify(OrderTicket(), openPrice, newSL, OrderTakeProfit(), 0, clrNONE);
+            if(!OrderModify(OrderTicket(), openPrice, newSL, OrderTakeProfit(), 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
          else if(!isBuy && (currentSL == 0 || newSL < currentSL) && newSL < openPrice)
-            OrderModify(OrderTicket(), openPrice, newSL, OrderTakeProfit(), 0, clrNONE);
+            if(!OrderModify(OrderTicket(), openPrice, newSL, OrderTakeProfit(), 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
       }
    }
 }
@@ -152,7 +152,7 @@ void ManagePositions()
    {
       if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue;
       
-      if(OrderMagicNumber() != MagicNumber || OrderSymbol() != Symbol()) continue;
+      if(OrderMagicNumber() != MagicFilter || OrderSymbol() != Symbol()) continue;
       
       // Data
       int type = OrderType();

@@ -17,6 +17,7 @@
 enum SIZING_METHOD { FIXED_RISK, FIXED_FRACTIONAL, KELLY_CRITERION };
 
 input string        LicenseKey = "";
+input int           MagicNumber = 0;
 input SIZING_METHOD Method = FIXED_RISK;
 input double        RiskPercent = 1.0;
 input double        FractionalPercent = 5.0;
@@ -28,7 +29,7 @@ input bool          ShowPanel = true;
 
 //--- MONEY MANAGEMENT ---
 input bool     UseMoneyManagement = true;   // Use Risk % for Lot Size
-input double   RiskPercent        = 2.0;    // Risk per trade (%)
+// input double RiskPercent duplicate removed
 
 //--- TRAILING STOP & BREAK EVEN ---
 input bool     UseTrailingStop    = true;   // Enable Trailing Stop

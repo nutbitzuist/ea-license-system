@@ -39,6 +39,7 @@
 // USER INPUT PARAMETERS
 //=============================================================================
 input string   LicenseKey = "";          // License Key (from dashboard)
+input int      MagicNumber = 0;          // Magic Number
 input double   RiskPercent = 1.0;        // Risk % per trade
 input int      StopLossPips = 50;        // Default SL in pips
 input int      TakeProfitPips = 100;     // Default TP in pips
@@ -48,12 +49,14 @@ input int      PanelY = 50;
 
 //--- MONEY MANAGEMENT ---
 input bool     UseMoneyManagement = true;   // Use Risk % for Lot Size
-input double   RiskPercent        = 2.0;    // Risk per trade (%)
+// input double RiskPercent duplicated removed
 
 //--- TRAILING STOP & BREAK EVEN ---
 input bool     UseTrailingStop    = true;   // Enable Trailing Stop
 input int      TrailingStop       = 50;     // Trailing Stop (points)
 input int      TrailingStep       = 10;     // Trailing Step (points)
+
+
 
 input bool     UseBreakEven       = true;   // Enable Break Even
 input int      BreakEvenTrigger   = 30;     // Points profit to trigger BE
@@ -223,7 +226,8 @@ void UpdatePanel()
    double tickSize = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
    double pipValue = tickValue * (point / tickSize) * g_calculatedLot;
    double margin = 0;
-   OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, g_calculatedLot, SymbolInfoDouble(_Symbol, SYMBOL_ASK), margin);
+   if(!OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, g_calculatedLot, SymbolInfoDouble(_Symbol, SYMBOL_ASK), margin)) 
+      margin = 0;
    
    ObjectSetString(0, "RC_Balance", OBJPROP_TEXT, "Balance: $" + DoubleToString(balance, 2));
    ObjectSetString(0, "RC_Risk", OBJPROP_TEXT, "Risk: " + DoubleToString(RiskPercent, 1) + "%");
@@ -275,7 +279,7 @@ void OnChartEvent(const int id, const long &lparam, const double &dparam, const 
 void PlaceTrade(ENUM_ORDER_TYPE orderType)
 {
    MqlTradeRequest request = {};
-   MqlTradeResult result = {};
+   MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
    double price = orderType == ORDER_TYPE_BUY ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double point = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
    
@@ -361,7 +365,7 @@ void ManagePositions()
                if(newSL > currentSL && (currentSL == 0 || newSL > currentSL))
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -380,7 +384,7 @@ void ManagePositions()
                if(newSL < currentSL || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -404,7 +408,7 @@ void ManagePositions()
                if(newSL > currentSL + TrailingStep * point)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;
@@ -423,7 +427,7 @@ void ManagePositions()
                if(newSL < currentSL - TrailingStep * point || currentSL == 0)
                {
                   MqlTradeRequest request = {};
-                  MqlTradeResult result = {};
+                  MqlTradeResult result = {}; ZeroMemory(request); ZeroMemory(result);
                   request.action = TRADE_ACTION_SLTP;
                   request.position = ticket;
                   request.sl = newSL;

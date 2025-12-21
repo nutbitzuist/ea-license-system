@@ -15,6 +15,7 @@
 #define LICENSE_GRACE_PERIOD 86400
 
 input string   LicenseKey = "";
+input int      MagicNumber = 0;
 input double   RiskPercent = 1.0;
 input int      StopLossPips = 50;
 input int      TakeProfitPips = 100;
@@ -22,7 +23,7 @@ input bool     ShowPanel = true;
 
 //--- MONEY MANAGEMENT ---
 input bool     UseMoneyManagement = true;   // Use Risk % for Lot Size
-input double   RiskPercent        = 2.0;    // Risk per trade (%)
+// input double RiskPercent duplicated removed
 
 //--- TRAILING STOP & BREAK EVEN ---
 input bool     UseTrailingStop    = true;   // Enable Trailing Stop

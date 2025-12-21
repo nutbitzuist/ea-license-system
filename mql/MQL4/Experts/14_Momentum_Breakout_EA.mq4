@@ -203,13 +203,13 @@ void UpdateTrailingStops(double atrValue)
             {
                double newSL = Bid - trailDistance;
                if(newSL > OrderStopLoss() && newSL > OrderOpenPrice())
-                  OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrNONE);
+                  if(!OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
             }
             else
             {
                double newSL = Ask + trailDistance;
                if((OrderStopLoss() == 0 || newSL < OrderStopLoss()) && newSL < OrderOpenPrice())
-                  OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrNONE);
+                  if(!OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrNONE)) Print("OrderModify failed: ", GetLastError());
             }
          }
       }

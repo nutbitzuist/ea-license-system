@@ -15,6 +15,7 @@
 #define LICENSE_GRACE_PERIOD 86400
 
 input string   LicenseKey = "";
+input int      MagicNumber = 0;
 input double   MaxDrawdownPercent = 10;
 input double   MaxDrawdownDollars = 0;
 input double   DailyLossLimit = 0;
@@ -80,7 +81,7 @@ void OnTick()
    if(limitHit) { if(EnableAlerts) Alert("EQUITY PROTECTOR: ", reason); if(CloseAllOnLimit) CloseAllTrades(); }
 }
 
-void CloseAllTrades() { for(int i = OrdersTotal() - 1; i >= 0; i--) { if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY) ? Bid : Ask, 50, clrNONE); } }
+void CloseAllTrades() { for(int i = OrdersTotal() - 1; i >= 0; i--) { if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) if(!OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY) ? Bid : Ask, 50, clrNONE)) Print("OrderClose failed: ", GetLastError()); } }
 void UpdateDisplay(double equity, double ddPercent, double ddDollars, double dailyPL) { int y = 20; CreateOrUpdateLabel("EP_Title", 20, y, "=== EQUITY PROTECTOR ===", clrGold); y += 20; CreateOrUpdateLabel("EP_Equity", 20, y, "Equity: $" + DoubleToString(equity, 2), clrWhite); y += 15; CreateOrUpdateLabel("EP_Peak", 20, y, "Peak: $" + DoubleToString(g_peakEquity, 2), clrWhite); y += 15; CreateOrUpdateLabel("EP_DD", 20, y, "DD: " + DoubleToString(ddPercent, 1) + "%", ddPercent > MaxDrawdownPercent * 0.8 ? clrOrange : clrWhite); y += 15; CreateOrUpdateLabel("EP_Daily", 20, y, "Daily: $" + DoubleToString(dailyPL, 2), dailyPL >= 0 ? clrLime : clrRed); }
 void CreateOrUpdateLabel(string name, int x, int y, string text, color clr) { if(ObjectFind(0, name) < 0) { ObjectCreate(0, name, OBJ_LABEL, 0, 0, 0); ObjectSetInteger(0, name, OBJPROP_XDISTANCE, x); ObjectSetInteger(0, name, OBJPROP_YDISTANCE, y); ObjectSetInteger(0, name, OBJPROP_FONTSIZE, 10); } ObjectSetString(0, name, OBJPROP_TEXT, text); ObjectSetInteger(0, name, OBJPROP_COLOR, clr); }
 //+------------------------------------------------------------------+

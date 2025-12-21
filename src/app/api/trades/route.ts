@@ -6,6 +6,8 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { tradeSubmitSchema } from "@/lib/validations"
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
+import { z } from "zod"
+
 
 
 // POST: Submit a new trade or update an existing one (from EA)
@@ -134,13 +136,31 @@ export async function POST(request: NextRequest) {
             tradeId: trade.id,
         })
     } catch (error) {
+        // Handle validation errors separately (P1 fix)
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Invalid trade data",
+                    errors: error.issues,
+                    retryable: false,
+                },
+                { status: 400 }
+            )
+        }
+
         console.error("Trade submission error:", error)
         return NextResponse.json(
-            { success: false, message: "Failed to submit trade" },
+            {
+                success: false,
+                message: "Failed to submit trade",
+                retryable: true, // EA can safely retry on server errors
+            },
             { status: 500 }
         )
     }
 }
+
 
 // GET: Fetch trades for the current user (from dashboard)
 export async function GET(request: NextRequest) {

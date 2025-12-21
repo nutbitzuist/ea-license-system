@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db"
 import { accountSchema } from "@/lib/validations"
 import { getMaxAccountsByTier } from "@/lib/utils"
 
+
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
@@ -24,7 +25,6 @@ export async function GET() {
       },
       orderBy: { createdAt: "desc" },
     })
-
 
     const maxAccounts = getMaxAccountsByTier(user?.subscriptionTier || "TIER_1")
 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     })
 
     const currentAccountCount = await prisma.mtAccount.count({
-      where: { userId: session.user.id },
+      where: { userId: session.user.id, deletedAt: null },
     })
 
     const maxAccounts = getMaxAccountsByTier(user?.subscriptionTier || "TIER_1")
@@ -68,32 +68,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check for duplicate account
-    const existingAccount = await prisma.mtAccount.findFirst({
-      where: {
-        userId: session.user.id,
-        accountNumber: validatedData.accountNumber,
-        brokerName: validatedData.brokerName,
-      },
-    })
-
-    if (existingAccount) {
-      return NextResponse.json(
-        { error: "This account is already registered" },
-        { status: 400 }
-      )
+    // Create account - unique constraint will prevent duplicates (race-safe)
+    try {
+      const account = await prisma.mtAccount.create({
+        data: {
+          userId: session.user.id,
+          ...validatedData,
+        },
+      })
+      return NextResponse.json({ account })
+    } catch (createError) {
+      // Handle unique constraint violation (P2002) - account already exists
+      if (
+        createError instanceof Error &&
+        'code' in createError &&
+        (createError as { code: string }).code === 'P2002'
+      ) {
+        return NextResponse.json(
+          { error: "This account is already registered" },
+          { status: 400 }
+        )
+      }
+      throw createError // Re-throw for generic handling
     }
-
-    const account = await prisma.mtAccount.create({
-      data: {
-        userId: session.user.id,
-        ...validatedData,
-      },
-    })
-
-    return NextResponse.json({ account })
   } catch (error) {
     console.error("Create account error:", error)
     return NextResponse.json({ error: "Failed to create account" }, { status: 500 })
   }
 }
+
+

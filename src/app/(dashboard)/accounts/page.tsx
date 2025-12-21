@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Trash2, Edit, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { QueryError } from "@/components/ui/query-error"
 
 interface MtAccount {
   id: string
@@ -28,6 +30,10 @@ interface MtAccount {
 export default function AccountsPage() {
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [, setEditAccount] = useState<MtAccount | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; account: MtAccount | null }>({
+    open: false,
+    account: null,
+  })
   const [formData, setFormData] = useState({
     accountNumber: "",
     brokerName: "",
@@ -38,7 +44,7 @@ export default function AccountsPage() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["accounts"],
     queryFn: async () => {
       const res = await fetch("/api/accounts")
@@ -46,6 +52,7 @@ export default function AccountsPage() {
       return res.json()
     },
   })
+
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -99,6 +106,7 @@ export default function AccountsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] })
+      setDeleteConfirm({ open: false, account: null })
       toast({ title: "Success", description: "Account deleted successfully" })
     },
     onError: () => {
@@ -253,11 +261,14 @@ export default function AccountsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {error ? (
+            <QueryError message="Failed to load accounts" onRetry={() => refetch()} />
+          ) : isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : data?.accounts?.length > 0 ? (
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -315,7 +326,7 @@ export default function AccountsPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => deleteMutation.mutate(account.id)}
+                          onClick={() => setDeleteConfirm({ open: true, account })}
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
@@ -336,6 +347,22 @@ export default function AccountsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm({ open, account: open ? deleteConfirm.account : null })}
+        title="Delete Account"
+        description={`Are you sure you want to delete account ${deleteConfirm.account?.accountNumber}? This action cannot be undone.`}
+        confirmText="Delete"
+        variant="destructive"
+        onConfirm={() => {
+          if (deleteConfirm.account) {
+            deleteMutation.mutate(deleteConfirm.account.id)
+          }
+        }}
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   )
 }

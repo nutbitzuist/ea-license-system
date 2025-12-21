@@ -61,9 +61,17 @@ export async function DELETE(
       return NextResponse.json({ error: "Account not found" }, { status: 404 })
     }
 
-    await prisma.mtAccount.delete({ where: { id } })
+    // Soft delete - set deletedAt timestamp instead of removing
+    await prisma.mtAccount.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+        isActive: false,
+      },
+    })
 
     return NextResponse.json({ success: true })
+
   } catch (error) {
     console.error("Delete account error:", error)
     return NextResponse.json({ error: "Failed to delete account" }, { status: 500 })

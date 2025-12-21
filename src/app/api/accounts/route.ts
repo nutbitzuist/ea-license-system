@@ -18,9 +18,13 @@ export async function GET() {
     })
 
     const accounts = await prisma.mtAccount.findMany({
-      where: { userId: session.user.id },
+      where: {
+        userId: session.user.id,
+        deletedAt: null, // Exclude soft-deleted accounts
+      },
       orderBy: { createdAt: "desc" },
     })
+
 
     const maxAccounts = getMaxAccountsByTier(user?.subscriptionTier || "TIER_1")
 

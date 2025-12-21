@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { hash } from "bcryptjs"
 import { prisma } from "@/lib/db"
+import { Prisma } from "@prisma/client"
 import { registerSchema } from "@/lib/validations"
 import { sendVerificationEmail, generateToken } from "@/lib/email"
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 import { z } from "zod"
+
 
 // Extended schema with optional referral code
 const registerWithReferralSchema = registerSchema.extend({
@@ -57,42 +59,50 @@ export async function POST(request: NextRequest) {
     const trialEndsAt = new Date()
     trialEndsAt.setDate(trialEndsAt.getDate() + 14)
 
-    // Create user with 14-day free trial (auto-approved)
-    const user = await prisma.user.create({
-      data: {
-        email: validatedData.email,
-        passwordHash,
-        name: validatedData.name,
-        isApproved: true,  // Auto-approve for free trial
-        trialEndsAt,       // 14-day trial
-        emailVerified: null, // Not verified yet
-        referredByCode: validatedData.referralCode || null,
-      },
-    })
-
-    // Create referral record if referred by someone
-    if (referrerId) {
-      await prisma.referral.create({
-        data: {
-          referrerId,
-          referredId: user.id,
-          referralCode: validatedData.referralCode!,
-          status: "PENDING",
-        },
-      })
-    }
-
     // Generate email verification token
     const token = generateToken()
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+    const tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
-    await prisma.emailVerificationToken.create({
-      data: {
-        email: validatedData.email,
-        token,
-        expiresAt,
-      },
+    // Use transaction to ensure all records are created atomically
+    const user = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+
+      // Create user with 14-day free trial (auto-approved)
+      const newUser = await tx.user.create({
+        data: {
+          email: validatedData.email,
+          passwordHash,
+          name: validatedData.name,
+          isApproved: true,  // Auto-approve for free trial
+          trialEndsAt,       // 14-day trial
+          emailVerified: null, // Not verified yet
+          referredByCode: validatedData.referralCode || null,
+        },
+      })
+
+      // Create referral record if referred by someone
+      if (referrerId) {
+        await tx.referral.create({
+          data: {
+            referrerId,
+            referredId: newUser.id,
+            referralCode: validatedData.referralCode!,
+            status: "PENDING",
+          },
+        })
+      }
+
+      // Create email verification token
+      await tx.emailVerificationToken.create({
+        data: {
+          email: validatedData.email,
+          token,
+          expiresAt: tokenExpiresAt,
+        },
+      })
+
+      return newUser
     })
+
 
     // Send verification email (non-blocking)
     sendVerificationEmail(validatedData.email, token).catch(console.error)

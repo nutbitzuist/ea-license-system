@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
+import { updateEaSchema } from "@/lib/validations"
+
 
 export async function GET(
   request: NextRequest,
@@ -47,16 +49,18 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
+    const validatedData = updateEaSchema.parse(body)
 
     const ea = await prisma.expertAdvisor.update({
       where: { id },
       data: {
-        name: body.name,
-        description: body.description,
-        currentVersion: body.currentVersion,
-        isActive: body.isActive,
+        ...(validatedData.name !== undefined && { name: validatedData.name }),
+        ...(validatedData.description !== undefined && { description: validatedData.description }),
+        ...(validatedData.currentVersion !== undefined && { currentVersion: validatedData.currentVersion }),
+        ...(validatedData.isActive !== undefined && { isActive: validatedData.isActive }),
       },
     })
+
 
     return NextResponse.json({ ea })
   } catch (error) {

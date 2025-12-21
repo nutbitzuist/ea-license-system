@@ -47,6 +47,14 @@ export const grantEaAccessSchema = z.object({
   expiresAt: z.string().datetime().optional().nullable(),
 })
 
+export const updateEaSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name too long").optional(),
+  description: z.string().max(500, "Description too long").optional().nullable(),
+  currentVersion: z.string().min(1).max(20, "Version too long").optional(),
+  isActive: z.boolean().optional(),
+})
+
+
 // Trade submission from EA (open or close)
 export const tradeSubmitSchema = z.object({
   accountNumber: z.string().min(1, "Account number is required"),

@@ -43,8 +43,16 @@ export async function POST(request: NextRequest) {
             },
         })
 
-        // Send email
-        await sendPasswordResetEmail(email, token)
+        // Send email - catch email errors separately so token is still created
+        try {
+            const result = await sendPasswordResetEmail(email, token)
+            if (!result.success) {
+                console.error("Email send failed:", result.error)
+            }
+        } catch (emailError) {
+            console.error("Email service error:", emailError)
+            // Continue anyway - token is created, user can try again
+        }
 
         return NextResponse.json({
             success: true,
@@ -52,8 +60,12 @@ export async function POST(request: NextRequest) {
         })
     } catch (error) {
         console.error("Forgot password error:", error)
+
+        // Return more specific error info for debugging
+        const errorMessage = error instanceof Error ? error.message : "Unknown error"
+
         return NextResponse.json(
-            { error: "Failed to process request" },
+            { error: "Failed to process request", details: errorMessage },
             { status: 500 }
         )
     }

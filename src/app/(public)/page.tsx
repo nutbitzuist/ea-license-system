@@ -256,6 +256,8 @@ export default function LandingPage() {
                     </div>
                     <p className="text-sm text-gray-600">© {new Date().getFullYear()} All rights reserved.</p>
                     <div className="flex items-center gap-6 text-sm text-gray-500">
+                        <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                        <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
                         <Link href="/login" className="hover:text-white transition-colors">Login</Link>
                         <Link href="/register" className="hover:text-white transition-colors">Register</Link>
                     </div>

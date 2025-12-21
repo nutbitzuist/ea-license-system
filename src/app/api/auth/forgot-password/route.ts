@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { sendPasswordResetEmail, generateToken } from "@/lib/email"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 import { z } from "zod"
 
 const forgotPasswordSchema = z.object({
@@ -9,8 +10,19 @@ const forgotPasswordSchema = z.object({
 
 export async function POST(request: NextRequest) {
     try {
+        // Rate limiting by IP
+        const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
+        const rateLimitResult = checkRateLimit(`auth:forgot:${ip}`, RATE_LIMITS.auth)
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                { error: "Too many requests. Please try again later." },
+                { status: 429 }
+            )
+        }
+
         const body = await request.json()
         const { email } = forgotPasswordSchema.parse(body)
+
 
         // Find user by email
         const user = await prisma.user.findUnique({

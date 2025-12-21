@@ -1,17 +1,29 @@
 import { NextRequest, NextResponse } from "next/server"
 import { hash } from "bcryptjs"
 import { prisma } from "@/lib/db"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 import { z } from "zod"
 
 const resetPasswordSchema = z.object({
     token: z.string().min(1),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(8, "Password must be at least 8 characters").max(128, "Password too long"),
 })
 
 export async function POST(request: NextRequest) {
     try {
+        // Rate limiting by IP
+        const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
+        const rateLimitResult = checkRateLimit(`auth:reset:${ip}`, RATE_LIMITS.auth)
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                { error: "Too many requests. Please try again later." },
+                { status: 429 }
+            )
+        }
+
         const body = await request.json()
         const { token, password } = resetPasswordSchema.parse(body)
+
 
         // Find valid token
         const resetToken = await prisma.passwordResetToken.findUnique({

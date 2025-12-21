@@ -1,9 +1,12 @@
 "use server"
 
 import { NextRequest, NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { tradeSubmitSchema } from "@/lib/validations"
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
+
 
 // POST: Submit a new trade or update an existing one (from EA)
 export async function POST(request: NextRequest) {
@@ -142,20 +145,22 @@ export async function POST(request: NextRequest) {
 // GET: Fetch trades for the current user (from dashboard)
 export async function GET(request: NextRequest) {
     try {
+        // SECURITY: Use session user ID, not query parameter
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { success: false, message: "Unauthorized" },
+                { status: 401 }
+            )
+        }
+
+        const userId = session.user.id
         const { searchParams } = new URL(request.url)
-        const userId = searchParams.get("userId")
         const status = searchParams.get("status") as "OPEN" | "CLOSED" | null
         const accountId = searchParams.get("accountId")
         const eaId = searchParams.get("eaId")
         const limit = parseInt(searchParams.get("limit") || "50")
         const offset = parseInt(searchParams.get("offset") || "0")
-
-        if (!userId) {
-            return NextResponse.json(
-                { success: false, message: "User ID required" },
-                { status: 400 }
-            )
-        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const where: any = { userId }
@@ -184,6 +189,7 @@ export async function GET(request: NextRequest) {
             limit,
             offset,
         })
+
     } catch (error) {
         console.error("Fetch trades error:", error)
         return NextResponse.json(

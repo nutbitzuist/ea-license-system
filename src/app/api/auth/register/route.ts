@@ -3,6 +3,7 @@ import { hash } from "bcryptjs"
 import { prisma } from "@/lib/db"
 import { registerSchema } from "@/lib/validations"
 import { sendVerificationEmail, generateToken } from "@/lib/email"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 import { z } from "zod"
 
 // Extended schema with optional referral code
@@ -12,8 +13,19 @@ const registerWithReferralSchema = registerSchema.extend({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting by IP
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
+    const rateLimitResult = checkRateLimit(`auth:register:${ip}`, RATE_LIMITS.auth)
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: "Too many registration attempts. Please try again later." },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const validatedData = registerWithReferralSchema.parse(body)
+
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({

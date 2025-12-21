@@ -1,37 +1,108 @@
-// Simple in-memory rate limiter
-// For production, consider using Redis or a similar solution
+// Distributed rate limiter using Vercel KV
+// Falls back to in-memory for local development
 
-interface RateLimitEntry {
-  count: number
-  resetTime: number
-}
-
-const rateLimitStore = new Map<string, RateLimitEntry>()
+import { kv } from "@vercel/kv"
 
 export interface RateLimitConfig {
   maxRequests: number
   windowMs: number
 }
 
+export interface RateLimitResult {
+  allowed: boolean
+  remaining: number
+  resetTime: number
+}
+
+// In-memory fallback for local development
+interface RateLimitEntry {
+  count: number
+  resetTime: number
+}
+const memoryStore = new Map<string, RateLimitEntry>()
+
+/**
+ * Check rate limit using Vercel KV (production) or in-memory (development)
+ */
+export async function checkRateLimitAsync(
+  key: string,
+  config: RateLimitConfig = { maxRequests: 100, windowMs: 60000 }
+): Promise<RateLimitResult> {
+  // Use Vercel KV in production
+  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    return checkRateLimitKV(key, config)
+  }
+  // Fallback to in-memory for local dev
+  return checkRateLimitMemory(key, config)
+}
+
+/**
+ * Synchronous rate limit check (for backward compatibility)
+ * Uses in-memory store only - suitable for development or non-critical paths
+ */
 export function checkRateLimit(
   key: string,
   config: RateLimitConfig = { maxRequests: 100, windowMs: 60000 }
-): { allowed: boolean; remaining: number; resetTime: number } {
-  const now = Date.now()
-  const entry = rateLimitStore.get(key)
+): RateLimitResult {
+  return checkRateLimitMemory(key, config)
+}
 
-  // Clean up expired entries periodically
+async function checkRateLimitKV(
+  key: string,
+  config: RateLimitConfig
+): Promise<RateLimitResult> {
+  try {
+    const now = Date.now()
+    const windowKey = `ratelimit:${key}:${Math.floor(now / config.windowMs)}`
+
+    // Increment counter
+    const count = await kv.incr(windowKey)
+
+    // Set expiry on first request of window
+    if (count === 1) {
+      await kv.expire(windowKey, Math.ceil(config.windowMs / 1000) + 1)
+    }
+
+    const resetTime = (Math.floor(now / config.windowMs) + 1) * config.windowMs
+
+    return {
+      allowed: count <= config.maxRequests,
+      remaining: Math.max(0, config.maxRequests - count),
+      resetTime,
+    }
+  } catch (error) {
+    console.error("Vercel KV rate limit error:", error)
+    // Fail open - allow request if KV is unavailable
+    return {
+      allowed: true,
+      remaining: config.maxRequests,
+      resetTime: Date.now() + config.windowMs,
+    }
+  }
+}
+
+function checkRateLimitMemory(
+  key: string,
+  config: RateLimitConfig
+): RateLimitResult {
+  const now = Date.now()
+  const entry = memoryStore.get(key)
+
+  // Clean up expired entries periodically (1% chance per request)
   if (Math.random() < 0.01) {
-    cleanupExpiredEntries()
+    const entries = Array.from(memoryStore.entries())
+    for (const [k, v] of entries) {
+      if (now > v.resetTime) memoryStore.delete(k)
+    }
   }
 
+
   if (!entry || now > entry.resetTime) {
-    // Create new entry
     const newEntry: RateLimitEntry = {
       count: 1,
       resetTime: now + config.windowMs,
     }
-    rateLimitStore.set(key, newEntry)
+    memoryStore.set(key, newEntry)
     return {
       allowed: true,
       remaining: config.maxRequests - 1,
@@ -52,17 +123,6 @@ export function checkRateLimit(
     allowed: true,
     remaining: config.maxRequests - entry.count,
     resetTime: entry.resetTime,
-  }
-}
-
-function cleanupExpiredEntries() {
-  const now = Date.now()
-  const keys = Array.from(rateLimitStore.keys())
-  for (const key of keys) {
-    const entry = rateLimitStore.get(key)
-    if (entry && now > entry.resetTime) {
-      rateLimitStore.delete(key)
-    }
   }
 }
 

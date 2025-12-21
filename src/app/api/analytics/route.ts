@@ -10,17 +10,19 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get validation logs for this user
+    // Get validation logs for this user (limit for performance)
     const logs = await prisma.validationLog.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
+      take: 1000, // Limit to recent activity for performance
     })
+
 
     // Calculate statistics
     const totalValidations = logs.length
     const successfulValidations = logs.filter(l => l.result === "SUCCESS").length
     const failedValidations = logs.filter(l => l.result === "FAILED").length
-    
+
     // Get unique accounts
     const uniqueAccounts = new Set(logs.map(l => l.accountNumber)).size
 

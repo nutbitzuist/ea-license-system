@@ -36,10 +36,11 @@ export async function GET(request: NextRequest) {
         if (eaId) where.eaId = eaId
         if (dateFilter) where.closeTime = { gte: dateFilter }
 
-        // Get all closed trades for calculations
+        // Get closed trades for calculations (limited for performance)
         const trades = await prisma.trade.findMany({
             where,
-            orderBy: { closeTime: "asc" },
+            orderBy: { closeTime: "desc" },
+            take: 5000, // Limit to recent trades for performance
             select: {
                 profit: true,
                 pips: true,
@@ -50,6 +51,7 @@ export async function GET(request: NextRequest) {
                 type: true,
             },
         })
+
 
         if (trades.length === 0) {
             return NextResponse.json({

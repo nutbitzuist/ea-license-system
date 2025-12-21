@@ -65,7 +65,7 @@ model User {
   isApproved        Boolean          @default(false)
   trialEndsAt       DateTime?        // 14-day free trial end date
   emailVerified     DateTime?        // Null means not verified
-  referralCode      String           @unique @default(cuid())
+  referralCode      String?          @unique @default(cuid())
   referredByCode    String?          // Referral code used at signup
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt

@@ -136,11 +136,12 @@ export default function DownloadsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Downloads</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Expert Advisors</h2>
           <p className="text-muted-foreground">
-            Download Expert Advisors for MT4 and MT5
+            Download and manage your licensed Expert Advisors for MT4 and MT5
           </p>
         </div>
+
         <div className="flex gap-2">
           <Button onClick={() => handleDownloadAll("MT4")} variant="outline">
             <Download className="mr-2 h-4 w-4" />
@@ -200,14 +201,14 @@ export default function DownloadsPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                           <div className={`rounded-lg p-2 ${category === "martingale" ? "bg-destructive/10" :
-                              category === "utility" ? "bg-blue-500/10" :
-                                category === "advanced" ? "bg-purple-500/10" :
-                                  "bg-primary/10"
+                            category === "utility" ? "bg-blue-500/10" :
+                              category === "advanced" ? "bg-purple-500/10" :
+                                "bg-primary/10"
                             }`}>
                             <CategoryIcon className={`h-5 w-5 ${category === "martingale" ? "text-destructive" :
-                                category === "utility" ? "text-blue-500" :
-                                  category === "advanced" ? "text-purple-500" :
-                                    "text-primary"
+                              category === "utility" ? "text-blue-500" :
+                                category === "advanced" ? "text-purple-500" :
+                                  "text-primary"
                               }`} />
                           </div>
                           <div>

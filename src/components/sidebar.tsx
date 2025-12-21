@@ -12,13 +12,13 @@ import {
   FileText,
   Shield,
   BarChart3,
-  Download,
   BookOpen,
   Activity,
   TrendingUp,
   Bell,
   Gift,
 } from "lucide-react"
+
 
 const userNavItems = [
   {
@@ -27,16 +27,12 @@ const userNavItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Downloads",
-    href: "/downloads",
-    icon: Download,
-  },
-  {
     title: "Expert Advisors",
-    href: "/eas",
+    href: "/downloads",
     icon: Bot,
   },
   {
+
     title: "Performance",
     href: "/performance",
     icon: TrendingUp,

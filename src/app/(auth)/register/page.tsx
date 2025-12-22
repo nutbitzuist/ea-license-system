@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Shield, Loader2, Gift, ChevronDown, ChevronUp } from "lucide-react"
+import { Layers, Loader2, Gift, ChevronDown, ChevronUp } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 function RegisterForm() {
@@ -97,7 +97,7 @@ function RegisterForm() {
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
           <div className="rounded-full bg-primary/10 p-3">
-            <Shield className="h-8 w-8 text-primary" />
+            <Layers className="h-8 w-8 text-primary" />
           </div>
         </div>
         <CardTitle className="text-2xl text-white">Create an account</CardTitle>

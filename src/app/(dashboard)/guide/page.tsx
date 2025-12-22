@@ -3,15 +3,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { 
-  Download, 
-  Key, 
-  Settings, 
-  Play, 
-  CheckCircle2, 
+import {
+  Download,
+  Key,
+  Settings,
+  Play,
+  CheckCircle2,
   AlertTriangle,
   FileCode,
-  Shield,
+  Layers,
   ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
@@ -218,7 +218,7 @@ export default function GuidePage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-primary" />
+            <Layers className="h-5 w-5 text-primary" />
             <CardTitle>Need Help?</CardTitle>
           </div>
         </CardHeader>

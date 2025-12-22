@@ -11,7 +11,7 @@ import {
   Bot,
   Settings,
   FileText,
-  Shield,
+  Layers,
   BarChart3,
   BookOpen,
   Activity,
@@ -19,6 +19,7 @@ import {
   Bell,
   Gift,
   MessageSquare,
+  Settings2,
 } from "lucide-react"
 
 
@@ -121,7 +122,7 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
     <div className="flex h-full w-64 flex-col border-r bg-card">
       <div className="flex h-16 items-center border-b px-6">
         <Link href={isAdmin ? "/admin" : "/dashboard"} className="flex items-center gap-2">
-          <Shield className="h-6 w-6 text-primary" />
+          <Layers className="h-6 w-6 text-primary" />
           <span className="font-bold text-lg">My Algo Stack</span>
         </Link>
       </div>
@@ -156,7 +157,7 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
             href="/admin"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            <Shield className="h-4 w-4" />
+            <Settings2 className="h-4 w-4" />
             Admin Panel
           </Link>
         )}

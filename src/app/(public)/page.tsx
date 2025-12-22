@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Layers, Bot, Key, Activity, ArrowRight, Zap, Globe, Lock, Star, TrendingUp, BarChart3, Users, Check, X, Sparkles, Timer, ChevronRight } from "lucide-react"
+import { Layers, Bot, Key, Activity, ArrowRight, Globe, Lock, Star, TrendingUp, BarChart3, Users, Check, X, Sparkles, Timer, ChevronRight } from "lucide-react"
 
 export default function LandingPage() {
     return (

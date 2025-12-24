@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Layers, Bot, Key, Activity, ArrowRight, Globe, Lock, Star, TrendingUp, BarChart3, Users, Check, X, Sparkles, Timer, ChevronRight } from "lucide-react"
+import { PricingSection } from "@/components/pricing-section"
 
 export default function LandingPage() {
     return (
@@ -310,63 +311,8 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Pricing Teaser */}
-            <section className="px-6 py-24 lg:px-12 bg-white border-y-[3px] border-[#1a1a1a]">
-                <div className="max-w-4xl mx-auto">
-                    <div className="text-center mb-16">
-                        <span className="inline-block px-4 py-2 text-sm font-bold bg-[#dcfce7] text-[#16a34a] border-[3px] border-[#1a1a1a] shadow-[4px_4px_0px_0px_#1a1a1a] mb-6">
-                            SIMPLE PRICING
-                        </span>
-                        <h2 className="text-4xl lg:text-5xl font-black">Start free, upgrade anytime</h2>
-                        <p className="mt-4 text-lg text-[#6a6a6a]">No hidden fees. Cancel anytime.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Free Plan */}
-                        <div className="p-8 bg-[#f5f5f5] border-[3px] border-[#1a1a1a] shadow-[4px_4px_0px_0px_#1a1a1a]">
-                            <h3 className="text-2xl font-bold mb-2">Free Trial</h3>
-                            <p className="text-[#6a6a6a] mb-6">Perfect to get started</p>
-                            <div className="mb-6">
-                                <span className="text-4xl font-black">$0</span>
-                                <span className="text-[#6a6a6a]">/14 days</span>
-                            </div>
-                            <ul className="space-y-3 mb-8">
-                                {['Access to all EAs', 'Up to 2 accounts', 'Basic analytics', 'Email support'].map(feature => (
-                                    <li key={feature} className="flex items-center gap-2 font-medium">
-                                        <Check className="h-5 w-5 text-[#16a34a]" /> {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                            <Link href="/register" className="block w-full py-3 text-center font-bold border-[3px] border-[#1a1a1a] shadow-[4px_4px_0px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                                Start free trial
-                            </Link>
-                        </div>
-
-                        {/* Pro Plan */}
-                        <div className="relative p-8 bg-[#16a34a] text-white border-[3px] border-[#1a1a1a] shadow-[6px_6px_0px_0px_#1a1a1a]">
-                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#fbbf24] text-[#1a1a1a] font-bold text-sm border-[2px] border-[#1a1a1a]">
-                                MOST POPULAR
-                            </div>
-                            <h3 className="text-2xl font-bold mb-2">Pro</h3>
-                            <p className="text-white/80 mb-6">For serious traders</p>
-                            <div className="mb-6">
-                                <span className="text-4xl font-black">$49</span>
-                                <span className="text-white/80">/month</span>
-                            </div>
-                            <ul className="space-y-3 mb-8">
-                                {['Unlimited EAs', 'Unlimited accounts', 'Advanced analytics', 'Priority support', 'API access'].map(feature => (
-                                    <li key={feature} className="flex items-center gap-2 font-medium">
-                                        <Check className="h-5 w-5 text-[#fbbf24]" /> {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                            <Link href="/register" className="block w-full py-3 text-center font-bold bg-white text-[#16a34a] border-[3px] border-[#1a1a1a] shadow-[4px_4px_0px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                                Get started now
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            {/* Pricing Section */}
+            <PricingSection />
 
             {/* Final CTA */}
             <section className="px-6 py-32 lg:px-12">

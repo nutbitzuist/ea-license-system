@@ -2,8 +2,16 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 
+// DEV BYPASS: Set to true to skip authentication (for local UI testing only)
+const DEV_BYPASS = false
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // DEV BYPASS: Skip all auth checks when enabled
+  if (DEV_BYPASS) {
+    return NextResponse.next()
+  }
 
   // Get the token from the session
   const token = await getToken({

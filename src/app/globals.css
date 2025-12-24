@@ -4,58 +4,78 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Neo-Brutalist Light Theme */
+    --background: 0 0% 96%;
+    --foreground: 0 0% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 142 76% 90%;
+    --accent-foreground: 142 76% 36%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 10%;
+    --input: 0 0% 10%;
+    --ring: 142 76% 36%;
+    --radius: 0px;
+    --chart-1: 142 76% 36%;
+    --chart-2: 199 89% 48%;
+    --chart-3: 280 65% 60%;
+    --chart-4: 43 96% 56%;
+    --chart-5: 0 84% 60%;
+    
+    /* Neo-Brutalist specific */
+    --brutal-border: #1a1a1a;
+    --brutal-shadow: 4px 4px 0px 0px #1a1a1a;
+    --brutal-shadow-sm: 2px 2px 0px 0px #1a1a1a;
+    --brutal-shadow-lg: 6px 6px 0px 0px #1a1a1a;
+    --brutal-green: #16a34a;
+    --brutal-green-light: #dcfce7;
+    --brutal-bg: #f5f5f5;
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    /* Neo-Brutalist Dark Theme */
+    --background: 0 0% 7%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --card: 0 0% 10%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+    --popover: 0 0% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
+    --primary: 142 76% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 14%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 142 76% 20%;
+    --accent-foreground: 142 76% 60%;
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 30%;
+    --input: 0 0% 30%;
+    --ring: 142 76% 42%;
+    --chart-1: 142 76% 42%;
+    --chart-2: 199 89% 55%;
+    --chart-3: 280 65% 65%;
+    --chart-4: 43 96% 60%;
+    --chart-5: 0 84% 65%;
+    
+    /* Neo-Brutalist dark specific */
+    --brutal-border: #404040;
+    --brutal-shadow: 4px 4px 0px 0px #404040;
+    --brutal-shadow-sm: 2px 2px 0px 0px #404040;
+    --brutal-shadow-lg: 6px 6px 0px 0px #404040;
+    --brutal-green: #22c55e;
+    --brutal-green-light: #166534;
+    --brutal-bg: #121212;
   }
 }
 
@@ -71,5 +91,29 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* Neo-Brutalist utility classes */
+  .brutal-shadow {
+    box-shadow: var(--brutal-shadow);
+  }
+  .brutal-shadow-sm {
+    box-shadow: var(--brutal-shadow-sm);
+  }
+  .brutal-shadow-lg {
+    box-shadow: var(--brutal-shadow-lg);
+  }
+  .brutal-border {
+    border: 3px solid var(--brutal-border);
+  }
+  .brutal-border-2 {
+    border: 2px solid var(--brutal-border);
+  }
+  .brutal-hover {
+    @apply transition-all duration-150;
+  }
+  .brutal-hover:hover {
+    box-shadow: var(--brutal-shadow-sm);
+    transform: translate(2px, 2px);
   }
 }

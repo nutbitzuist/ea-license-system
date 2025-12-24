@@ -119,14 +119,19 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
   const navItems = isAdmin ? adminNavItems : userNavItems
 
   return (
-    <div className="flex h-full w-64 flex-col border-r bg-card">
-      <div className="flex h-16 items-center border-b px-6">
-        <Link href={isAdmin ? "/admin" : "/dashboard"} className="flex items-center gap-2">
-          <Layers className="h-6 w-6 text-primary" />
+    <div className="flex h-full w-64 flex-col bg-[var(--brutal-bg)] dark:bg-background border-r-[3px] border-[var(--brutal-border)]">
+      {/* Logo */}
+      <div className="flex h-16 items-center border-b-[3px] border-[var(--brutal-border)] px-6">
+        <Link href={isAdmin ? "/admin" : "/dashboard"} className="flex items-center gap-3 group">
+          <div className="w-10 h-10 bg-[var(--brutal-green)] border-[3px] border-[var(--brutal-border)] flex items-center justify-center brutal-shadow group-hover:brutal-shadow-sm group-hover:translate-x-[2px] group-hover:translate-y-[2px] transition-all">
+            <Layers className="h-5 w-5 text-white" />
+          </div>
           <span className="font-bold text-lg">My Algo Stack</span>
         </Link>
       </div>
-      <nav className="flex-1 space-y-1 p-4">
+      
+      {/* Navigation */}
+      <nav className="flex-1 space-y-2 p-4 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href ||
             (item.href !== "/dashboard" && item.href !== "/admin" && pathname.startsWith(item.href))
@@ -135,29 +140,31 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-all",
                 isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-[var(--brutal-green)] text-white border-[3px] border-[var(--brutal-border)] brutal-shadow"
+                  : "text-muted-foreground hover:bg-[var(--brutal-green-light)] hover:text-foreground border-[3px] border-transparent hover:border-[var(--brutal-border)]"
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className="h-5 w-5" />
               {item.title}
             </Link>
           )
         })}
       </nav>
-      <div className="border-t p-4 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Theme</span>
+      
+      {/* Footer */}
+      <div className="border-t-[3px] border-[var(--brutal-border)] p-4 space-y-3">
+        <div className="flex items-center justify-between px-2">
+          <span className="text-sm font-semibold text-muted-foreground">Theme</span>
           <ThemeToggle />
         </div>
         {!isAdmin && (
           <Link
             href="/admin"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+            className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-muted-foreground hover:bg-[var(--brutal-green-light)] hover:text-foreground border-[3px] border-transparent hover:border-[var(--brutal-border)] transition-all"
           >
-            <Settings2 className="h-4 w-4" />
+            <Settings2 className="h-5 w-5" />
             Admin Panel
           </Link>
         )}
@@ -165,3 +172,4 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
     </div>
   )
 }
+
